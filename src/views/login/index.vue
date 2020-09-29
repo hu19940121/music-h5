@@ -6,6 +6,9 @@
       left-arrow
       @click-left="$router.go(-1)"
     />
+    <van-notice-bar mode="closeable">
+      {{ $t('tips.loginWay') }}
+    </van-notice-bar>
     <van-form @submit="onSubmit" class="margin-top-lg">
       <van-field
         v-model="phone"

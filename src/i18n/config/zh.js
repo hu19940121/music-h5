@@ -4,7 +4,9 @@ export default {
   },
   tips: {
     changeLanuageText: '切换语言成功',
-    undo: '此功能暂未实现'
+    undo: '此功能暂未实现',
+    loginWay: '网易云手机号密码登陆（暂只支持这一种）'
+
   },
   leftNav: {
     languageText: '语言',

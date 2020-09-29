@@ -4,7 +4,8 @@ export default {
   },
   tips: {
     changeLanuageText: 'change success',
-    undo: 'will come soon'
+    undo: 'will come soon',
+    loginWay: 'netease music account and password ( only suppose this way )'
 
   },
   leftNav: {

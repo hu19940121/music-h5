@@ -5,8 +5,8 @@ export default {
   },
   tips: {
     changeLanuageText: 'Перемикач успішно',
-    undo: 'Ще не реалізовано'
-
+    undo: 'Ще не реалізовано',
+    loginWay: 'Вхід до пароля номера мобільного телефону cloudease (тільки цей підтримується тимчасово)'
   },
   leftNav: {
     languageText: 'мова',
