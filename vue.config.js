@@ -59,6 +59,10 @@ module.exports = {
         pathRewrite: {
           '^/musicApi': ''
         }
+      },
+      '/api/v2': {
+        target: 'https://kaier001.com/',
+        changeOrigin: true
       }
     }
     // proxy: {

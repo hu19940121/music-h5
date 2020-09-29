@@ -30,5 +30,11 @@ export const constantRouterMap = [
     meta: {
       keepAlive: false
     }
+  }, {
+    path: '/feedback',
+    component: () => import('@/views/feedback/index'),
+    meta: {
+      keepAlive: false
+    }
   }
 ]

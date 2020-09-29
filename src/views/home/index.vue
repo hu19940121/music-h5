@@ -21,6 +21,12 @@
       </van-tab>
     </van-tabs>
     <leftNav v-model="show" />
+    <router-link to="/feedback">
+      <div class="feedback">
+        <svg-icon  className="icon" icon-class="feedback"   />
+      </div>
+    </router-link>
+
     <!-- <van-popup v-model="show" position="left" :style="{ width: '60%',height:'100%' }" /> -->
   </div>
 </template>
@@ -69,5 +75,17 @@ export default {
   background-color: #d43c33ff;
   color: #fff;
   font-size: 18px;
+}
+.feedback {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: #fff;
 }
 </style>
