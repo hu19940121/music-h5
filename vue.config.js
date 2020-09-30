@@ -63,6 +63,13 @@ module.exports = {
       '/api/v2': {
         target: 'https://kaier001.com/',
         changeOrigin: true
+      },
+      '/planet/api': {
+        target: 'https://opendev.steam001.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/planet/api': '/planet/api'
+        }
       }
     }
     // proxy: {

@@ -51,6 +51,13 @@ export default {
   },
   mounted() {
     console.log('home mounted')
+    this.$share({
+      title: `网易云vip音乐随意听！`,
+      desc: '想一想你的美丽我的平凡，一次次默默走开',
+      imgUrl: 'https://resource.kaier001.com/music.jpeg',
+      link: `${location.origin}/#/`
+    }, () => {
+    })
   },
   computed: {
     ...mapState({

@@ -15,7 +15,11 @@
           <p class="artist"> {{currentSongSingers }} </p>
         </div>
       </div>
-      <div class="right">
+      <div class="right flex align-center">
+        <div class="time padding-right-sm">
+          <span> {{ currentTime | formatMinuteSecond }} </span>/
+          <span>{{ currentSong.dt | formatMinuteSecond}} </span>
+        </div>
         <van-circle v-if="isPlaying" layer-color="#eeeeee" color="#d43c33ff"   v-model="percent" size="34" :speed="100">
           <svg-icon @click.stop="pause" className="icon" icon-class="pause"  />
         </van-circle>
@@ -170,6 +174,12 @@ export default {
         color: #666;
         @include textoverflow(1)
       }
+    }
+  }
+  .right {
+    .time {
+      font-size: 12px;
+      color: #666;
     }
   }
 }

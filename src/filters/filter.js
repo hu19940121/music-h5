@@ -46,3 +46,10 @@ export function getCount(count) {
     return Math.floor(count / 10000000) / 10 + '亿'
   }
 }
+export function formatMonthDay(time) {
+  return formatDate(time, 'MM月dd日')
+}
+
+export function formatMinuteSecond(time) {
+  return formatDate(time, 'mm:ss')
+}

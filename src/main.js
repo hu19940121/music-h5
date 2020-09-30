@@ -28,6 +28,9 @@ import './filters'
 import i18n from './i18n'
 Vue.config.productionTip = false
 
+import share from './share'
+Vue.prototype.$share = share
+
 new Vue({
   el: '#app',
   router,
