@@ -26,18 +26,60 @@
         <van-circle  v-else color="#666" v-model="currentRate2"  size="34">
           <svg-icon @click.stop="play" className="icon" icon-class="play"   />
         </van-circle>
+        <svg-icon  @click.stop="showList = true"  class="list-icon margin-left-xs" icon-class="list"   />
       </div>
     </div>
-    <audio @timeupdate="handleTimeUpdate" @play="setIsplaying(true)" @pause="setIsplaying(false)" ref="audio"></audio>
+    <audio @ended="handleEnded" @timeupdate="handleTimeUpdate" @play="setIsplaying(true)" @pause="setIsplaying(false)" ref="audio"></audio>
+    <van-popup v-model="showList" position="bottom" :style="{ minHeight: '30%' }">
+      <div class="list-wrap">
+        <h3>当前播放<span>({{ playList.length }})</span></h3>
+        <div class="control flex justify-between padding-tb-xs">
+          <span class="" @click="changePlayway">
+            {{ currentPlaywayText }}
+            <svg-icon :icon-class="playwayMap[currentPlayway].iconName"   />
+          </span>
+          <svg-icon @click="SET_PLAY_LIST([])" icon-class="delete"   />
+        </div>
+        <div class="songList">
+          <div class="item flex justify-between padding-tb-xs" v-for="song in playList" :key="song.id" @click="listPlay(song)" >
+            <div class="flex" :class="['item-left', { 'active': currentSong.id === song.id }]">
+              <svg-icon  v-if="currentSong.id === song.id" icon-class="laba"   />
+              {{ song.name }}
+            </div>
+            <div class="item-right">
+              <van-icon color="#666" @click.stop="deleteInPlaylist( song.id )"  name="cross" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex'
-import { getSizeImage } from '@/utils'
+import { getSizeImage, getRandomNumber } from '@/utils'
 export default {
   data() {
     return {
+      playwayMap: {
+        0: {
+          name: '列表循环',
+          iconName: 'xunhuan'
+        },
+        1: {
+          name: '随机播放',
+          iconName: 'suiji'
+        },
+        2: {
+          name: '单曲循环',
+          iconName: 'dqxunhuan'
+        }
+      },
+      currentPlayway: 0, // 0（列表循环）,1(随机),2（单曲循环）
+      list: ['当太阳超长身体而玩儿玩儿撒打算打算呢', '恭喜发财', '自由飞翔', '龙的传人', 'ai', '分手快乐', '秋天不回来', 'hello sfsdf'],
+      showList: false,
       getSizeImage,
       duration: 0, // 总时长
       currentTime: 0, // 当前播放的进度
@@ -50,6 +92,29 @@ export default {
       avatar: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1601184512597&di=2c7719222da00151ac8446d890586412&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn19%2F0%2Fw400h400%2F20180910%2F3391-hiycyfw5413589.jpg'
     }
   },
+  computed: {
+    ...mapState({
+      currentSong: (state) => state.song.currentSong,
+      isPlaying: (state) => state.song.isPlaying,
+      lyricList: (state) => state.song.lyricList,
+      currentLyricIndex: (state) => state.song.currentLyricIndex,
+      playList: (state) => state.song.playList,
+      currentSongIndex: (state) => state.song.currentSongIndex
+    }),
+    currentPlaywayText() {
+      return this.playwayMap[this.currentPlayway].name
+    },
+    currentSongSingers() {
+      if (this.currentSong.ar) {
+        return this.currentSong.ar.map((item) => item.name).join('-')
+      } else {
+        return ''
+      }
+    },
+    currentSongAlbumImg() {
+      return this.currentSong.al && this.currentSong.al.picUrl
+    }
+  },
   watch: {
     currentSong(newValue, oldValue) {
       this.$refs.audio.src = newValue.url
@@ -60,12 +125,31 @@ export default {
   },
   methods: {
     ...mapActions({
-      setIsplaying: 'song/setIsplaying'
+      setIsplaying: 'song/setIsplaying',
+      setCurrentSong: 'song/setCurrentSong',
+      setPlayList: 'song/setPlayList'
     }),
     ...mapMutations({
-      SET_CURRENT_LYRIC_INDEX: 'song/SET_CURRENT_LYRIC_INDEX'
+      SET_CURRENT_LYRIC_INDEX: 'song/SET_CURRENT_LYRIC_INDEX',
+      SET_PLAY_LIST: 'song/SET_PLAY_LIST',
+      SET_CURRENT_SONG_INDEX: 'song/SET_CURRENT_SONG_INDEX'
     }),
 
+    // playlist操作
+    listPlay(song) {
+      this.setCurrentSong(song)
+    },
+    deleteInPlaylist(id) {
+      const newList = this.playList.filter((item) => item.id !== id)
+      this.setPlayList(newList)
+    },
+    // end
+    changePlayway() {
+      this.currentPlayway = this.currentPlayway + 1
+      if (this.currentPlayway > 2) {
+        this.currentPlayway = 0
+      }
+    },
     jumpToPlayer() {
       this.$router.push({
         path: '/player'
@@ -98,31 +182,36 @@ export default {
         }
       }
     },
+
+    // 播放完毕处理
+    handleEnded() {
+      if (this.playList.length === 0) { // 列表里没有歌直接return
+        return
+      }
+      // eslint-disable-next-line prefer-const
+      let { currentPlayway, currentSongIndex, playList } = this
+      if (currentPlayway === 1) { // 随机
+        const randomNum = getRandomNumber(playList.length)
+        console.log('randomNum', randomNum)
+        console.log('playList[randomNum]', playList[randomNum])
+        this.SET_CURRENT_SONG_INDEX(randomNum)
+        this.setCurrentSong(playList[randomNum])
+      } else { // 普通
+        currentSongIndex = currentSongIndex + 1
+        if (currentSongIndex > playList.length - 1) {
+          currentSongIndex = 0
+        }
+        this.SET_CURRENT_SONG_INDEX(currentSongIndex)
+        this.setCurrentSong(playList[currentSongIndex])
+      }
+    },
+
     handleSlideChange() {
       this.isChanging = true
     },
     handleSlideEnd() {
-      console.log('sdfs')
       this.$refs.audio.currentTime = ((this.percent / 100) * this.duration) / 1000
       this.isChanging = false
-    }
-  },
-  computed: {
-    ...mapState({
-      currentSong: (state) => state.song.currentSong,
-      isPlaying: (state) => state.song.isPlaying,
-      lyricList: (state) => state.song.lyricList,
-      currentLyricIndex: (state) => state.song.currentLyricIndex
-    }),
-    currentSongSingers() {
-      if (this.currentSong.ar) {
-        return this.currentSong.ar.map((item) => item.name).join('-')
-      } else {
-        return ''
-      }
-    },
-    currentSongAlbumImg() {
-      return this.currentSong.al && this.currentSong.al.picUrl
     }
   }
 }
@@ -137,6 +226,9 @@ export default {
   right: 0;
   background-color: #fff;
   border-top: 1px solid #eeeeee;
+  .list-icon {
+    font-size: 20px;
+  }
   .progress-wrap {
     width: 100%;
     position: absolute;
@@ -158,6 +250,7 @@ export default {
     transform: translate(-50%,-50%);
   }
   .left {
+    flex:1;
     .cover {
       width: 40px;
       height: 40px;
@@ -177,9 +270,38 @@ export default {
     }
   }
   .right {
+    flex:1;
     .time {
       font-size: 12px;
       color: #666;
+    }
+  }
+  .list-wrap {
+    padding: 20px;
+    box-sizing: border-box;
+    h3>span {
+      font-size: 12px;
+      color: #666;
+    }
+    .songList {
+      height: 280px;
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        display: none; /* Chrome Safari */
+      }
+      .item {
+        .item-left {
+          width: 200px;
+          @include textoverflow(1);
+          &.active {
+            color: #ee0a24;
+          }
+        }
+        .item-right {
+          width: 75px;
+          text-align: right;
+        }
+      }
     }
   }
 }

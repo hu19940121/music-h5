@@ -5,7 +5,7 @@
         <img src="~assets/images/erji.svg" alt="">
         {{ info.playCount | getCount}}
       </div>
-      <van-image  :src="info.picUrl || info.coverImgUrl"  />
+      <van-image style="width:100%;height:100%;"  :src="info.picUrl || info.coverImgUrl"  />
       <!-- <img :src="gedan.picUrl" alt=""> -->
     </div>
     <p class="info two-lines">

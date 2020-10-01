@@ -112,3 +112,7 @@ export function param2Obj(url) {
 export function getSizeImage(imgUrl, size = 100) {
   return `${imgUrl}?param=${size}x${size}`
 }
+
+export function getRandomNumber(num) {
+  return Math.floor(Math.random() * num)
+}
