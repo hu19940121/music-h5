@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home">
     <van-nav-bar :title="$t('home.appTitle')">
       <template #left>
         <van-icon @click.native="show = !show" name="wap-nav" />
@@ -76,23 +76,41 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.top-banner {
-  height: 84px;
-  line-height: 84px;
-  background-color: #d43c33ff;
-  color: #fff;
-  font-size: 18px;
+.home {
+  /deep/.van-tab--active {
+    @include font_color("font_color1");
+  }
+  /deep/.van-tab {
+    @include background_color("background_color1");
+  }
+  /deep/.van-nav-bar {
+    @include background_color('background_color1');
+  }
+  /deep/.van-nav-bar__title {
+    @include font_color('font_color1');
+  }
+  /deep/[class*=van-hairline]::after {
+    border:none;
+  }
+  .top-banner {
+    height: 84px;
+    line-height: 84px;
+    background-color: #d43c33ff;
+    color: #fff;
+    font-size: 18px;
+  }
+  .feedback {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background-color: #fff;
+  }
 }
-.feedback {
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  line-height: 40px;
-  border-radius: 50%;
-  border: 1px solid #eee;
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background-color: #fff;
-}
+
 </style>

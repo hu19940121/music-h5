@@ -94,6 +94,7 @@ module.exports = {
         prependData: `
           @import "assets/css/mixin.scss";
           @import "assets/css/variables.scss";
+          @import "@/assets/css/_handle.scss";
           $cdn: "${defaultSettings.$cdn}";
           `
       }

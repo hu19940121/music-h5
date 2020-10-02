@@ -16,7 +16,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'App',
   mounted() {
-
+    window.document.documentElement.setAttribute('data-theme', this.theme)
   },
   components: {
     playerBar
@@ -25,7 +25,8 @@ export default {
   },
   computed: {
     ...mapState({
-      currentSong: (state) => state.song.currentSong
+      currentSong: (state) => state.song.currentSong,
+      theme: (state) => state.app.theme
     })
   },
   watch: {
@@ -34,6 +35,10 @@ export default {
 }
 </script>
 <style lang="scss">
+body {
+  @include background_color("background_color1");
+
+}
 .fade-enter-active, .fade-leave-active {
   transition: all 1s;
 }

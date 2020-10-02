@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="player-wrap">
     <van-nav-bar
       :title="currentSong.name"
       left-text="返回"
@@ -78,29 +78,39 @@ export default {
 
     100%{-webkit-transform:rotate(360deg);}
 }
-.player {
-  .redColor {
-    color: #d43c33ff;
+.player-wrap {
+  /deep/.van-nav-bar {
+    @include background_color('background_color1');
   }
-  .cover {
-    display: inline-block;
-    margin: 50px 0;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    &.donghua {
-      animation: changeright 6s linear infinite
+  /deep/.van-nav-bar__title {
+    @include font_color('font_color1');
+  }
+  .player {
+    .cover {
+      display: inline-block;
+      margin: 50px 0;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      &.donghua {
+        animation: changeright 6s linear infinite
+      }
     }
-  }
-  .lrylist {
-    position: relative;
-    text-align: center;
-    height: 200px;
-    overflow-y: scroll;
-    p {
+    .lrylist {
       position: relative;
-      padding: 4px 0;
+      text-align: center;
+      height: 200px;
+      overflow-y: scroll;
+      p {
+        @include font_color('font_color1');
+        position: relative;
+        padding: 4px 0;
+        &.redColor {
+          @include font_color('lyric_active_font_color');
+        }
+      }
     }
   }
 }
+
 </style>

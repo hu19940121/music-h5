@@ -7,18 +7,6 @@
       <div  v-for="(gedan,index) in gedanList" :key="gedan.id" :class="(index + 1) % 3 === 0 ? 'list-item ' : 'list-item margin-right-xxs'">
         <playlistItem :info="gedan" />
       </div>
-      <!-- <div @click="jumpToPlaylist(gedan)" v-for="(gedan,index) in gedanList" :key="gedan.id" :class="(index + 1) % 3 === 0 ? 'list-item ' : 'list-item margin-right-xxs'">
-        <div class="cover">
-          <div class="num">
-            <img src="~assets/images/erji.svg" alt="">
-            {{ gedan.playCount | getCount}}
-          </div>
-          <van-image  :src="gedan.picUrl"  />
-        </div>
-        <p class="info two-lines">
-          {{ gedan.name }}
-        </p>
-      </div> -->
     </div>
     <div class="title margin-tb-sm">
       {{$t('home.recommendView.newMusicText')}}
@@ -69,11 +57,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .recommend {
   .title {
     font-size: 17px;
     position: relative;
     padding-left:10px;
+    @include font_color("font_color1");
     &:after {
       content: " ";
       position: absolute;

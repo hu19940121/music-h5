@@ -53,6 +53,7 @@ export default {
 .info {
   font-size: 12px;
   padding: 0 4px;
-  @include textoverflow(2)
+  @include textoverflow(2);
+  @include font_color("font_color1");
 }
 </style>

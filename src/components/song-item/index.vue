@@ -95,7 +95,8 @@ export default {
       }
     }
     .name {
-      @include textoverflow(1)
+      @include textoverflow(1);
+      @include font_color("font_color1");
     }
     .desc {
       font-size: 12px;

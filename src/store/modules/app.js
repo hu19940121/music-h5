@@ -1,14 +1,20 @@
 import Cookies from 'js-cookie'
+import { getTheme, setTheme } from '@/utils/auth'
 
 import { getLanguage } from '@/i18n/index'
 
 const state = {
   userName: '',
+  theme: getTheme(),
   language: getLanguage()
 }
 const mutations = {
   SET_USER_NAME(state, name) {
     state.userName = name
+  },
+  CHANGE_THEME(state, theme) {
+    state.theme = theme
+    setTheme(theme)
   },
   SET_LANGUAGE: (state, language) => {
     state.language = language

@@ -21,7 +21,7 @@
       <div class="title">
         歌曲列表
       </div>
-      <van-skeleton  :row="10" :loading="loading">
+      <van-skeleton  :row="10" :loading="true">
         <div class="list">
           <songItem isHotSongs  :order="index + 1" :songInfo="songInfo" :key="songInfo.id" v-for="(songInfo,index) in list" />
         </div>
@@ -68,6 +68,9 @@ export default {
 
 <style lang="scss" scoped>
 .playlist {
+  /deep/.van-skeleton__row {
+    @include background_color('van_skeleton');
+  }
   .banner-wrap {
     position: relative;
     width: 100%;
@@ -123,7 +126,9 @@ export default {
   .title {
     padding: 4px;
     font-size: 12px;
-    background-color: #eeeff0;
+    @include background_color('background_color1');
+    @include font_color('font_color1')
+    /* background-color: #eeeff0; */
   }
 }
 </style>

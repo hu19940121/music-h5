@@ -226,6 +226,7 @@ export default {
   right: 0;
   background-color: #fff;
   border-top: 1px solid #eeeeee;
+  @include background-color("background_color1");
   .list-icon {
     font-size: 20px;
   }
@@ -248,6 +249,7 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+    @include font_color('font_color1')
   }
   .left {
     flex:1;
@@ -259,7 +261,8 @@ export default {
     .info {
        font-size: 12px;
       .name {
-        @include textoverflow(1)
+        @include textoverflow(1);
+        @include font_color(font_color1)
       }
       .artist {
         margin-top: 4px;
@@ -279,9 +282,12 @@ export default {
   .list-wrap {
     padding: 20px;
     box-sizing: border-box;
+    @include font_color('font_color1');
+    @include background_color('background_color1');
     h3>span {
       font-size: 12px;
       color: #666;
+
     }
     .songList {
       height: 280px;

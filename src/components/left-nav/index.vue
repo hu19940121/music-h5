@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrap">
     <van-popup v-model="show" position="left" :style="{ width: '60%',height:'100%' }">
       <div class="text-center padding-top">
         <div v-if="token">
@@ -38,7 +38,7 @@
           readonly
           clickable
           name="picker"
-          :value="themeValue"
+          :value="themeShow"
           :label="$t('leftNav.themeText')"
           placeholder=""
           @click="showThemePickerMethod"
@@ -72,7 +72,13 @@ export default {
       show: this.value,
       login: false,
       themeValue: '',
-      themeColumns: ['绿', '红', '黄'],
+      themeColumns: ['经典白', '炫酷黑'],
+      themeColumnsMap: {
+        '经典白': 'light',
+        '炫酷黑': 'dark',
+        'light': '经典白',
+        'dark': '炫酷黑'
+      },
       showPicker: false,
       showThemePicker: false
     }
@@ -80,6 +86,9 @@ export default {
   computed: {
     token() {
       return this.$store.state.user.token
+    },
+    theme() {
+      return this.$store.state.app.theme
     },
     userInfo() {
       return this.$store.state.user.userInfo
@@ -90,6 +99,9 @@ export default {
     languageShow() {
       const languageList = chooseLangueList[this.$i18n.locale]
       return languageList.length > 0 && languageList.find((item) => item.value === this.$store.state.app.language).text
+    },
+    themeShow() {
+      return this.themeColumnsMap[this.theme]
     },
     languageColumns() {
       return chooseLangueList[this.$i18n.locale]
@@ -108,7 +120,8 @@ export default {
       logout: 'user/logout'
     }),
     showThemePickerMethod() {
-      Toast(this.$t('tips.undo'))
+      this.showThemePicker = true
+      // Toast(this.$t('tips.undo'))
     },
     onConfirm(obj) {
       const v = obj.value
@@ -119,7 +132,10 @@ export default {
       this.showPicker = false
     },
     onThemeConfirm(value) {
-      this.themeValue = value
+      const theme = this.themeColumnsMap[value]
+      this.$store.commit('app/CHANGE_THEME', theme)
+      Toast(this.$t('tips.changeLanuageText'))
+      window.document.documentElement.setAttribute('data-theme', theme)
       this.showThemePicker = false
     },
     lgout() {
@@ -132,13 +148,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: red;
+.wrap {
+  /deep/.van-popup {
+    @include background_color("background_color1");
+  }
+  /deep/.van-cell {
+     @include background_color("background_color1");
+  }
+  /deep/.van-field__control {
+    @include font_color('font_color1')
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: red;
+  }
+  .nologin {
+    font-size: 50px;
+  }
 }
-.nologin {
-  font-size: 50px;
-}
+
 </style>
