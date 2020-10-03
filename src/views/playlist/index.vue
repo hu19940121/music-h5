@@ -21,7 +21,7 @@
       <div class="title">
         歌曲列表
       </div>
-      <van-skeleton  :row="10" :loading="true">
+      <van-skeleton  :row="10" :loading="loading">
         <div class="list">
           <songItem isHotSongs  :order="index + 1" :songInfo="songInfo" :key="songInfo.id" v-for="(songInfo,index) in list" />
         </div>
