@@ -9,9 +9,15 @@ $themes: (
         //字体
         font_color1: #414141,
         lyric_active_font_color: #d43c33ff,
+        van_tab_no_active: #646566,
+
         //背景
         background_color1: #fff,
+        background_image:'',
         van_skeleton: #f2f3f5,
+        van_popup: #fff,
+        van_search: #fff,
+        player_bar:#fff,
 
         //边框
         border_color1: #3d414a,
@@ -22,12 +28,34 @@ $themes: (
         //字体
         font_color1: white,
         lyric_active_font_color: #d43c33ff,
-        
+        van_tab_no_active: #646566,
+
         //背景
         background_color1: #1b2531,
+        background_image:'',
         van_skeleton: #000,
+        van_popup: #1b2531,
+        van_search: #1b2531,
+        player_bar:#1b2531,
 
+        //边框
+        border_color1: #3d414a,
+    
+    ),
+    girl1: (
+        //字体
+        font_color1: #fff,
+        lyric_active_font_color: #d43c33ff,
+        van_tab_no_active: #646566,
 
+        //背景
+        background_color1: rgba(0,0,0,0),
+        background_image: url('https://resource.kaier001.com/girl2.jpg'),
+        van_skeleton: #000,
+        van_popup: #1b2531,
+        van_search: #1b2531,
+        player_bar:#1b2531,
+        
         //边框
         border_color1: #3d414a,
     

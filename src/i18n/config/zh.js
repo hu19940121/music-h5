@@ -25,7 +25,8 @@ export default {
     searchText: '搜索',
     recommendView: {
       recommendListText: '推荐歌单',
-      newMusicText: '最新音乐'
+      newMusicText: '最新音乐',
+      hotSingersText: '热门歌手'
     },
     hotsongsView: {
       titleText: '音乐热歌榜'

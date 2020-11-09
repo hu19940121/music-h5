@@ -4,11 +4,15 @@ import { getTheme, setTheme } from '@/utils/auth'
 import { getLanguage } from '@/i18n/index'
 
 const state = {
+  isInApp: false,
   userName: '',
   theme: getTheme(),
   language: getLanguage()
 }
 const mutations = {
+  SET_IS_IN_APP(state, status) {
+    state.isInApp = status
+  },
   SET_USER_NAME(state, name) {
     state.userName = name
   },

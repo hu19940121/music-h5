@@ -5,5 +5,7 @@ module.exports = {
   baseApi: 'https://www.xxx.com/api', // 正式api请求地址
   APPID: 'xxx',
   APPSECRET: 'xxx',
-  $cdn: 'https://imgs.solui.cn'
+  $cdn: 'https://imgs.solui.cn',
+  vconsole: 'false' // 是否开启调试模式
+
 }

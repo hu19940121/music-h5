@@ -1,12 +1,12 @@
 <template>
   <div class="home">
-    <van-nav-bar :title="$t('home.appTitle')">
+    <van-nav-bar ref="navBar" fixed z-index="100" placeholder :title="$t('home.appTitle')">
       <template #left>
         <van-icon @click.native="show = !show" name="wap-nav" />
       </template>
     </van-nav-bar>
     <swipe />
-    <van-tabs v-model="active">
+    <van-tabs v-model="active" sticky :offset-top="tabsOffsetTop">
       <van-tab :title="$t('home.recommendText')">
         <recommend />
       </van-tab>
@@ -21,13 +21,33 @@
       </van-tab>
     </van-tabs>
     <leftNav v-model="show" />
-    <router-link to="/feedback">
-      <div class="feedback">
-        <svg-icon  className="icon" icon-class="feedback"   />
+    <div class="feedback" @click="linkToFeedback">
+      <svg-icon  className="icon" icon-class="feedback"   />
+    </div>
+    <footer class="m-homeft" v-if="!isInApp">
+      <div class="ftwrap">
+        <div class="logo flex align-center justify-center">
+           <img class="img" src="./logo.jpg" alt="">
+           <span class="text padding-left-sm">云音乐</span>
+        </div>
+        <div class="openapp" @click="linkToDownload">
+          打开APP，发现更多好音乐 >
+        </div>
+        <p class="copyright">
+          kaier版权所有©2020 673822024
+        </p>
       </div>
-    </router-link>
+    </footer>
+    <van-overlay z-index="10001" :show="showDownLoadTip" @click="showDownLoadTip = false">
+      <div class="content" @click.stop>
+        <div class="padding-right padding-top-sm" style="text-align:right;">
+            <p>链接打不开？</p>
+            <p>请点击右上角···</p>
+            <p>选择在<span class="red">“浏览器”</span>中打开</p>
+        </div>
+      </div>
+    </van-overlay>
 
-    <!-- <van-popup v-model="show" position="left" :style="{ width: '60%',height:'100%' }" /> -->
   </div>
 </template>
 
@@ -42,15 +62,20 @@ import swipe from './components/swipe'
 import { mapState } from 'vuex'
 export default {
   name: 'Home',
-
   data() {
     return {
+      showDownLoadTip: false,
+      tabsOffsetTop: 0,
       active: 0,
       show: false
     }
   },
   mounted() {
-    console.log('home mounted')
+    window.scanCallback = function(data) {
+      console.log('扫码结果---------' + JSON.stringify(data))
+    }
+    console.log('window.scanCallback', window.scanCallback)
+    this.tabsOffsetTop = this.$refs.navBar.height
     this.$share({
       title: `网易云vip音乐随意听！`,
       desc: '想一想你的美丽我的平凡，一次次默默走开',
@@ -61,8 +86,35 @@ export default {
   },
   computed: {
     ...mapState({
-      token: (state) => state.user.token
+      token: (state) => state.user.token,
+      isInApp: (state) => state.app.isInApp
     })
+  },
+  methods: {
+    onClickRight() {
+      // eslint-disable-next-line no-undef
+      uni.postMessage({
+        data: {
+          action: 'scan'
+        }
+      })
+    },
+    linkToDownload() {
+      var ua = navigator.userAgent.toLowerCase()
+      // eslint-disable-next-line eqeqeq
+      if (ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/QQ/i) == 'qq') {
+        this.showDownLoadTip = true
+      } else {
+        this.$router.push('/download')
+      }
+    },
+    linkToFeedback() {
+      console.log('跳转到feedback')
+      this.$router.push({
+        path: '/feedback'
+      })
+    }
+
   },
   components: {
     recommend,
@@ -77,20 +129,16 @@ export default {
 
 <style lang="scss" scoped>
 .home {
-  /deep/.van-tab--active {
-    @include font_color("font_color1");
+  .red {
+    color: red;
   }
-  /deep/.van-tab {
-    @include background_color("background_color1");
-  }
-  /deep/.van-nav-bar {
-    @include background_color('background_color1');
-  }
-  /deep/.van-nav-bar__title {
-    @include font_color('font_color1');
-  }
-  /deep/[class*=van-hairline]::after {
-    border:none;
+  .content {
+    width: 90%;
+    height: 100px;
+    background-color: #fff;
+    margin: 0 auto;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
   .top-banner {
     height: 84px;
@@ -110,6 +158,49 @@ export default {
     bottom: 80px;
     right: 20px;
     background-color: #fff;
+  }
+  .m-homeft{
+    position: relative;
+    padding-top: 53.3%;
+    margin-top: 4px;
+    background: url(//s3.music.126.net/mobile-new/img/recommand_bg_2x.png?d045faf…=) no-repeat;
+    background-size: contain;
+    .ftwrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      z-index: 1;
+      text-align: center;
+    }
+    .logo {
+      padding-top: 16.9%;
+      .text {
+        font-size: 28px;
+        color: #d33a31;
+      }
+    }
+    .img {
+      width: 55px;
+      height: 55px;
+    }
+    .openapp {
+      line-height: 38px;
+      border: 1px solid #d33a31;
+      border-radius: 38px;
+      font-size: 16px;
+      color: #d33a31;
+      margin: 15px 37px 5px;
+    }
+    .copyright {
+      color: #888;
+      font-size: 12px;
+      line-height: 16px;
+      -webkit-transform: scale(.75);
+      -ms-transform: scale(.75);
+      transform: scale(.75);
+    }
   }
 }
 

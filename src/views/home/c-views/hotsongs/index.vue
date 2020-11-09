@@ -1,12 +1,12 @@
 <template>
   <div class="hotsongs">
-    <div class="banner padding-left is-border-box">
+    <!-- <div class="banner padding-left is-border-box">
       <p class="padding-top">
         {{ $t('home.hotsongsView.titleText') }}
       </p>
-    </div>
+    </div> -->
     <div class="list">
-      <songItem isHotSongs :songInfo="songInfo" :key="songInfo.id" :order="index + 1"  v-for="(songInfo,index) in hotSongsList"/>
+      <songItem :playList="hotSongsList" isHotSongs :songInfo="songInfo" :key="songInfo.id" :order="index + 1"  v-for="(songInfo,index) in hotSongsList"/>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default {
   methods: {
     // 获取热歌榜单
     getPlaylistDetail() {
-      getPlaylistDetail({ id: 3778678 }).then(res => {
+      getPlaylistDetail({ id: 3778678, limit: 20, offset: 1 }).then(res => {
         this.hotSongsList = res.playlist.tracks
       })
     }

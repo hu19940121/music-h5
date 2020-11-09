@@ -137,7 +137,7 @@ export default {
 
     // playlist操作
     listPlay(song) {
-      this.setCurrentSong(song)
+      this.setCurrentSong({ song })
     },
     deleteInPlaylist(id) {
       const newList = this.playList.filter((item) => item.id !== id)
@@ -192,17 +192,15 @@ export default {
       let { currentPlayway, currentSongIndex, playList } = this
       if (currentPlayway === 1) { // 随机
         const randomNum = getRandomNumber(playList.length)
-        console.log('randomNum', randomNum)
-        console.log('playList[randomNum]', playList[randomNum])
         this.SET_CURRENT_SONG_INDEX(randomNum)
-        this.setCurrentSong(playList[randomNum])
+        this.setCurrentSong({ song: playList[randomNum] })
       } else { // 普通
         currentSongIndex = currentSongIndex + 1
         if (currentSongIndex > playList.length - 1) {
           currentSongIndex = 0
         }
         this.SET_CURRENT_SONG_INDEX(currentSongIndex)
-        this.setCurrentSong(playList[currentSongIndex])
+        this.setCurrentSong({ song: playList[currentSongIndex] })
       }
     },
 
@@ -221,12 +219,13 @@ export default {
 .player-bar {
   position: fixed;
   height: 50px;
+  z-index: 100000000000;
   bottom: 0;
   left: 0;
   right: 0;
   background-color: #fff;
   border-top: 1px solid #eeeeee;
-  @include background-color("background_color1");
+  @include background_color("player_bar");
   .list-icon {
     font-size: 20px;
   }

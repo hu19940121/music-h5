@@ -5,8 +5,7 @@
         <img src="~assets/images/erji.svg" alt="">
         {{ info.playCount | getCount}}
       </div>
-      <van-image style="width:100%;height:100%;"  :src="info.picUrl || info.coverImgUrl"  />
-      <!-- <img :src="gedan.picUrl" alt=""> -->
+      <van-image style="width:100%;height:100%;" fit="cover" lazy-load  :src="getSizeImage(info.picUrl || info.coverImgUrl,200)"  />
     </div>
     <p class="info two-lines">
       {{ info.name }}
@@ -15,11 +14,18 @@
 </template>
 
 <script>
+import { getSizeImage } from '@/utils'
+
 export default {
   props: {
     info: {
       type: Object,
       default: () => ({})
+    }
+  },
+  data() {
+    return {
+      getSizeImage
     }
   },
   methods: {

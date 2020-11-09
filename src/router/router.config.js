@@ -36,5 +36,43 @@ export const constantRouterMap = [
     meta: {
       keepAlive: false
     }
+  }, {
+    path: '/singerCate',
+    component: () => import('@/views/singerCate/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/singerList',
+    component: () => import('@/views/singerList/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/singerDetail',
+    component: () => import('@/views/singerDetail/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/albumDetail',
+    component: () => import('@/views/albumDetail/index'),
+    meta: {
+      keepAlive: false
+    }
+  },
+  {
+    path: '/mvDetail',
+    component: () => import('@/views/mvDetail/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/download',
+    component: () => import('@/views/download/index'),
+    meta: {
+      keepAlive: false
+    }
   }
+
 ]

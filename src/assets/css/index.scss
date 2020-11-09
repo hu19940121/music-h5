@@ -4,11 +4,18 @@
 
 html,
 body .app {
+
   color: #333333;
   font-family: Arial, Helvetica, 'STHeiti STXihei', 'Microsoft YaHei', Tohoma, sans-serif;
-  // background-color: $background-color;
 }
+body {
+	@include background_color("background_color1");
+	// @include background_image("background_image");
 
+	// background-size:cover;
+	// background-position: 50%;
+	// background-repeat: no-repeat;
+}
 .app-container {
   padding-bottom: 50px;
 }

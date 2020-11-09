@@ -5,7 +5,11 @@
       left-text="返回"
       left-arrow
       @click-left="$router.go(-1)"
-    />
+    >
+      <template #right v-if="isInApp">
+        <svg-icon style="color:#d43c33ff;font-size:18px;" icon-class="share" @click="share"   />
+      </template>
+    </van-nav-bar>
     <van-notice-bar
       @click.native="gift"
       :scrollable="false"
@@ -13,7 +17,7 @@
       text="更多更能正在开发中！"
     />
     <div class="player flex flex-direction align-center">
-      <img :class="['cover', { 'donghua': isPlaying } ]" :src="currentSong.al && currentSong.al.picUrl" />
+      <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist" ref="lrylist">
         <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
         <!-- <p ref="p2" class="p2">秋天不回来</p> -->
@@ -24,7 +28,7 @@
     </div>
     <van-dialog v-model="show" title="赏杯奶茶？" show-cancel-button>
       <div style="text-align:center;">
-      <img style="width:80%;" src="./zhifu.jpg" />
+      <van-image style="width:80%;" src="./zhifu.jpg" />
 
       </div>
     </van-dialog>
@@ -33,22 +37,48 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import { getSongDetail } from '@/api/song'
+import { getSizeImage } from '@/utils'
+
 export default {
   data() {
     return {
+      getSizeImage,
       show: false
     }
   },
   watch: {
     currentLyricIndex(value) {
-      this.judge(this.$refs.lry[value].offsetTop)
+      if (this.$refs.lry[value]) {
+        this.judge(this.$refs.lry[value].offsetTop)
+      }
     }
   },
   mounted() {
     console.log('mounted')
+    this.$route.query.id && this.playMusicByRouterId()
   },
   methods: {
+    ...mapActions({
+      setCurrentSong: 'song/setCurrentSong'
+    }),
+    share() {
+      // eslint-disable-next-line no-undef
+      uni.postMessage({
+        data: {
+          action: 'sharePlayList',
+          text: `分享歌曲：${this.currentSong.name}`,
+          href: `${location.href}?id=${this.currentSong.id}`
+        }
+      })
+    },
+    // 如果页面有id根据id播放
+    playMusicByRouterId() {
+      getSongDetail(this.$route.query.id).then(res => {
+        this.setCurrentSong({ song: res.songs[0] })
+      })
+    },
     gift() {
       this.show = true
     },
@@ -62,6 +92,7 @@ export default {
   },
   computed: {
     ...mapState({
+      isInApp: (state) => state.app.isInApp,
       currentSong: (state) => state.song.currentSong,
       isPlaying: (state) => state.song.isPlaying,
       lyricList: (state) => state.song.lyricList,
@@ -79,12 +110,6 @@ export default {
     100%{-webkit-transform:rotate(360deg);}
 }
 .player-wrap {
-  /deep/.van-nav-bar {
-    @include background_color('background_color1');
-  }
-  /deep/.van-nav-bar__title {
-    @include font_color('font_color1');
-  }
   .player {
     .cover {
       display: inline-block;

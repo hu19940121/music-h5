@@ -4,7 +4,7 @@
         z-index="100"
         fixed
         placeholder
-        title="歌单详情"
+        title="专辑详情"
         left-text="返回"
         left-arrow
         @click-left="$router.go(-1)"
@@ -16,18 +16,18 @@
         </template>
       </van-nav-bar>
       <div class="banner-wrap">
-        <div class="banner" :style="{ background:`url(${playlistInfo.coverImgUrl}) no-repeat` }">
+        <div class="banner" :style="{ background:`url(${album.blurPicUrl}) no-repeat` }">
 
         </div>
         <div class="content flex">
           <div class="left">
-            <img :src="playlistInfo.coverImgUrl" alt="">
+            <img :src="album.blurPicUrl" alt="">
           </div>
           <div class="right padding-left-sm">
-            <p>{{ playlistInfo.name }}</p>
-            <div class="info flex align-center margin-top-xs" v-if="playlistInfo.creator">
-              <img  :src="playlistInfo.creator.avatarUrl" alt="">
-              <span class="padding-left-xs">{{ playlistInfo.creator.nickname }}</span>
+            <p>{{ album.name }}</p>
+            <div class="info flex align-center margin-top-xs">
+              <img  :src="singer.img1v1Url" alt="">
+              <span class="padding-left-xs">{{ singer.name }}</span>
             </div>
           </div>
         </div>
@@ -38,7 +38,7 @@
       </div>
       <van-skeleton  :row="10" :loading="loading">
         <div class="list">
-          <songItem :playList="list" isHotSongs  :order="index + 1" :songInfo="songInfo" :key="songInfo.id" v-for="(songInfo,index) in list" />
+          <songItem isHotSongs  :order="index + 1" :songInfo="songInfo" :key="songInfo.id" v-for="(songInfo,index) in list" />
         </div>
         {{ list.length === 0 ? '暂无歌曲' : '' }}
       </van-skeleton>
@@ -48,8 +48,8 @@
 
 <script>
 import songItem from '@/components/song-item'
-import { mapState, mapActions } from 'vuex'
-import { getPlaylistDetail } from '@/api/song'
+import { mapState } from 'vuex'
+import { getArtistAlbumDetail } from '@/api/singer'
 export default {
   components: {
     songItem
@@ -58,14 +58,13 @@ export default {
     return {
       loading: false,
       list: [],
-      playlistInfo: {
-        creator: {}
-      }
+      album: {},
+      singer: {}
     }
   },
 
   mounted() {
-    this.getPlaylistDetail()
+    this.getArtistAlbumDetail()
   },
   computed: {
     ...mapState({
@@ -73,25 +72,23 @@ export default {
     })
   },
   methods: {
-    ...mapActions({
-      setCurrentSong: 'song/setCurrentSong'
-    }),
     share() {
       // eslint-disable-next-line no-undef
       uni.postMessage({
         data: {
           action: 'sharePlayList',
-          text: `分享歌单：${this.playlistInfo.name}`,
+          text: `分享专辑：${this.album.name}`,
           href: location.href
         }
       })
     },
-    getPlaylistDetail() {
+    getArtistAlbumDetail() {
       this.loading = true
-      getPlaylistDetail({ id: this.$route.query.id }).then((res) => {
+      getArtistAlbumDetail({ id: this.$route.query.id }).then((res) => {
         this.loading = false
-        this.playlistInfo = res.playlist
-        this.list = res.playlist.tracks
+        this.album = res.album
+        this.singer = res.album.artist
+        this.list = res.songs
       }).catch(() => {
         this.loading = false
       })

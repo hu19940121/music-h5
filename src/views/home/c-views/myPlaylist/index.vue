@@ -8,7 +8,7 @@
 
 <script>
 import { getPlaylist } from '@/api/user'
-import playlistItem from '../../components/playlist-item'
+import playlistItem from '@/components/playlist-item'
 export default {
 
   data() {

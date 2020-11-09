@@ -23,7 +23,8 @@ export default {
     searchText: 'пошук',
     recommendView: {
       recommendListText: 'Рекомендований список пісень',
-      newMusicText: 'Остання музика'
+      newMusicText: 'Остання музика',
+      hotSingersText: 'Hot Singers'
     },
     hotsongsView: {
       titleText: 'Популярний список музики'

@@ -30,6 +30,10 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   props: {
+    playList: {
+      type: Array,
+      default: () => null
+    },
     isHotSongs: {
       type: Boolean,
       default: false
@@ -75,7 +79,8 @@ export default {
     //   }
     // },
     play(song) {
-      this.setCurrentSong(song)
+      // this.setCurrentSong(song)
+      this.setCurrentSong({ song, playList: this.playList })
     },
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'

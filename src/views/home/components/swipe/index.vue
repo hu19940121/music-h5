@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
       <van-swipe-item v-for="banner in banners" :key="banner.imageUrl">
         <img :src="banner.imageUrl" alt="" @click="jumpToSongDetail(banner.targetId)">
@@ -30,7 +30,7 @@ export default {
       })
     },
     jumpToSongDetail(songId) {
-      this.setCurrentSong({ id: songId }).then(() => {
+      this.setCurrentSong({ song: { id: songId }}).then(() => {
         this.$router.push({
           path: '/player'
         })
@@ -41,6 +41,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
   .my-swipe .van-swipe-item {
     color: #fff;
     font-size: 20px;

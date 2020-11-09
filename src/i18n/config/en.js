@@ -26,7 +26,8 @@ export default {
 
     recommendView: {
       recommendListText: 'Recommend list',
-      newMusicText: 'Latest'
+      newMusicText: 'Latest',
+      hotSingersText: 'Hot Singers'
     },
     hotsongsView: {
       titleText: 'Hot music list'
@@ -43,7 +44,6 @@ export default {
     passwordText: 'password',
     passwordPlaceholder: 'Plaese enter password',
     submitText: 'submit'
-
   }
 
 }

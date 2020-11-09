@@ -23,7 +23,14 @@ import {
   Skeleton,
   Swipe,
   SwipeItem,
-  Form
+  Form,
+  CellGroup,
+  IndexBar,
+  IndexAnchor,
+  Lazyload,
+  Divider,
+  Overlay,
+  PullRefresh
 } from 'vant'
 Vue.use(Button)
 Vue.use(Cell)
@@ -48,3 +55,10 @@ Vue.use(Tabbar)
   .use(Swipe)
   .use(SwipeItem)
   .use(Form)
+  .use(CellGroup)
+  .use(IndexBar)
+  .use(IndexAnchor)
+  .use(Lazyload)
+  .use(Divider)
+  .use(PullRefresh)
+  .use(Overlay)

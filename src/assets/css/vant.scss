@@ -1,10 +1,47 @@
 .van-nav-bar .van-icon {
-  color: #d43c33ff;
+color: #d43c33ff !important;
 }
 .van-nav-bar__text {
-  color: #d43c33ff;
+  color: #d43c33ff !important;
 }
 .van-button--primary {
   background-color:#d43c33ff;
   border-color: #d43c33ff;
+}
+.van-tab {
+  @include background_color("background_color1");
+  @include font_color("van_tab_no_active");
+}
+.van-tab--active {
+  @include font_color("font_color1");
+}
+.van-nav-bar {
+  @include background_color('background_color1');
+}
+.van-nav-bar__title {
+  @include font_color('font_color1');
+}
+.van-skeleton__row {
+  @include background_color('van_skeleton');
+}
+[class*=van-hairline]::after {
+  border:none;
+}
+.van-popup {
+  @include background_color("van_popup");
+}
+.van-cell {
+  //  @include background_color("background_color1");
+  //  @include font_color('font_color1');
+
+}
+.van-field__control {
+  @include font_color('font_color1')
+}
+.van-tabs__nav {
+  @include background_color("background_color1");
+}
+.van-search  {
+  // @include background_color("van_search");
+
 }

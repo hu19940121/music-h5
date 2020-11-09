@@ -76,8 +76,11 @@ export default {
       themeColumnsMap: {
         '经典白': 'light',
         '炫酷黑': 'dark',
+        // '女孩1': 'girl1',
         'light': '经典白',
         'dark': '炫酷黑'
+        // 'girl1': '女孩1'
+
       },
       showPicker: false,
       showThemePicker: false
@@ -120,7 +123,8 @@ export default {
       logout: 'user/logout'
     }),
     showThemePickerMethod() {
-      this.showThemePicker = true
+      Toast('暂未开放')
+      // this.showThemePicker = true
       // Toast(this.$t('tips.undo'))
     },
     onConfirm(obj) {
@@ -149,15 +153,15 @@ export default {
 
 <style lang="scss" scoped>
 .wrap {
-  /deep/.van-popup {
+  /* /deep/.van-popup {
     @include background_color("background_color1");
-  }
+  } */
   /deep/.van-cell {
      @include background_color("background_color1");
   }
-  /deep/.van-field__control {
+  /* /deep/.van-field__control {
     @include font_color('font_color1')
-  }
+  } */
   .avatar {
     width: 50px;
     height: 50px;

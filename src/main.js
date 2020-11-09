@@ -5,6 +5,8 @@ import 'regenerator-runtime/runtime'
 
 import Vue from 'vue'
 import App from './App.vue'
+// import Vconsole from 'vconsole' // 调试
+
 import router from './router'
 import store from './store'
 
@@ -30,6 +32,12 @@ Vue.config.productionTip = false
 
 import share from './share'
 Vue.prototype.$share = share
+const defaultSettgs = require('./config/index.js')
+console.log('defaultSettgs.vconsole', defaultSettgs.vconsole)
+// if (defaultSettgs.vconsole === 'on') {
+// // eslint-disable-next-line no-unused-vars
+//   const vConsole = new Vconsole()
+// }
 
 new Vue({
   el: '#app',
