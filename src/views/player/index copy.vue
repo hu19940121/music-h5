@@ -18,10 +18,8 @@
     />
     <div class="player flex flex-direction align-center">
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
-      <div class="lrylist"  ref="scroll">
-        <div class="scroll-content">
-          <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
-        </div>
+      <div class="lrylist" ref="lrylist">
+        <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
         <!-- <p ref="p2" class="p2">秋天不回来</p> -->
       </div>
       <div v-show=" lyricList.length === 0 ">
@@ -41,49 +39,31 @@
 import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage } from '@/utils'
-import BScroll from '@better-scroll/core'
 
 export default {
   data() {
     return {
       getSizeImage,
       show: false,
-      enableScroll: true
+      decreaseNum: null,
+      addNum: null
     }
   },
   watch: {
     currentLyricIndex(value) {
-      if (this.$refs.lry[value] && this.enableScroll) {
-        this.bs.scrollToElement(this.$refs.lry[value], 300, false, true)
+      if (this.$refs.lry[value]) {
+        this.judge(this.$refs.lry[value].offsetTop)
       }
     }
   },
   mounted() {
     console.log('mounted')
     this.$route.query.id && this.playMusicByRouterId()
-    this.$nextTick(() => {
-      this.initScroll()
-    })
   },
   methods: {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
-
-    initScroll() {
-      this.bs = new BScroll(this.$refs.scroll, {
-        probeType: 3,
-        click: true
-      })
-      this.bs.on('beforeScrollStart', () => {
-        console.log('beforeScrollStart')
-        this.enableScroll = false
-      })
-      this.bs.on('scrollEnd', () => {
-        console.log('scrollEnd')
-        this.enableScroll = true
-      })
-    },
     share() {
       // eslint-disable-next-line no-undef
       uni.postMessage({
@@ -102,6 +82,22 @@ export default {
     },
     gift() {
       this.show = true
+    },
+    judge(num) {
+      if (num > this.$refs.lrylist.clientHeight / 2) {
+        if (!this.decreaseNum) {
+          this.decreaseNum = num
+          this.addNum = this.$refs.lry[1].offsetTop - this.$refs.lry[0].offsetTop
+        }
+        this.$refs.lrylist.scrollTop = (num - this.decreaseNum) + this.addNum
+      }
+      // console.log('this.$refs.lrylist.clientHeight',this.$refs.lrylist.scrollHeight);
+      // this.$refs.lrylist.scrollTop =  200
+      // if (num > this.$refs.lrylist.clientHeight) {
+      //   this.$refs.lrylist.scrollTop = num
+      // } else {
+      //   this.$refs.lrylist.scrollTop = 0
+      // }
     }
   },
   computed: {
@@ -136,10 +132,10 @@ export default {
       }
     }
     .lrylist {
+      position: relative;
       text-align: center;
       height: 200px;
-      overflow: hidden;
-      position: relative;
+      overflow-y: scroll;
       p {
         @include font_color('font_color1');
         position: relative;
