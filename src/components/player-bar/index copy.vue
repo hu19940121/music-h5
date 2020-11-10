@@ -30,7 +30,31 @@
       </div>
     </div>
     <audio @ended="handleEnded" @timeupdate="handleTimeUpdate" @play="setIsplaying(true)" @pause="setIsplaying(false)" ref="audio"></audio>
-    <playListCom v-model="showList"/>
+    <playListCom />
+    <!-- <van-popup v-model="showList" position="bottom" :style="{ minHeight: '30%' }">
+      <div class="list-wrap">
+        <h3>当前播放<span>({{ playList.length }})</span></h3>
+        <div class="control flex justify-between padding-tb-xs">
+          <span class="" @click="changePlayway">
+            {{ currentPlaywayText }}
+            <svg-icon :icon-class="playwayMap[currentPlayway].iconName"   />
+          </span>
+          <svg-icon @click="SET_PLAY_LIST([])" icon-class="delete"   />
+        </div>
+        <div class="songList">
+          <div class="item flex justify-between padding-tb-xs" v-for="song in playList" :key="song.id" @click="listPlay(song)" >
+            <div class="flex" :class="['item-left', { 'active': currentSong.id === song.id }]">
+              <svg-icon  v-if="currentSong.id === song.id" icon-class="laba"   />
+              {{ song.name }}
+            </div>
+            <div class="item-right">
+              <van-icon color="#666" @click.stop="deleteInPlaylist( song.id )"  name="cross" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </van-popup> -->
   </div>
 </template>
 
@@ -41,15 +65,33 @@ import playListCom from './playList'
 export default {
   data() {
     return {
+      playwayMap: {
+        0: {
+          name: '列表循环',
+          iconName: 'xunhuan'
+        },
+        1: {
+          name: '随机播放',
+          iconName: 'suiji'
+        },
+        2: {
+          name: '单曲循环',
+          iconName: 'dqxunhuan'
+        }
+      },
+      currentPlayway: 0, // 0（列表循环）,1(随机),2（单曲循环）
       list: ['当太阳超长身体而玩儿玩儿撒打算打算呢', '恭喜发财', '自由飞翔', '龙的传人', 'ai', '分手快乐', '秋天不回来', 'hello sfsdf'],
       showList: false,
       getSizeImage,
       duration: 0, // 总时长
       currentTime: 0, // 当前播放的进度
       isChanging: false, // 是否正在更改进度
+      // slideValue: 0,
       percent: 0, // 进度百分比
+      // isPlaying: false,
       currentRate: 0,
-      currentRate2: 100
+      currentRate2: 100,
+      avatar: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1601184512597&di=2c7719222da00151ac8446d890586412&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn19%2F0%2Fw400h400%2F20180910%2F3391-hiycyfw5413589.jpg'
     }
   },
   components: {
@@ -62,9 +104,11 @@ export default {
       lyricList: (state) => state.song.lyricList,
       currentLyricIndex: (state) => state.song.currentLyricIndex,
       playList: (state) => state.song.playList,
-      currentSongIndex: (state) => state.song.currentSongIndex,
-      currentPlayway: (state) => state.song.currentPlayway
+      currentSongIndex: (state) => state.song.currentSongIndex
     }),
+    currentPlaywayText() {
+      return this.playwayMap[this.currentPlayway].name
+    },
     currentSongSingers() {
       if (this.currentSong.ar) {
         return this.currentSong.ar.map((item) => item.name).join('-')
@@ -95,6 +139,22 @@ export default {
       SET_PLAY_LIST: 'song/SET_PLAY_LIST',
       SET_CURRENT_SONG_INDEX: 'song/SET_CURRENT_SONG_INDEX'
     }),
+
+    // playlist操作
+    listPlay(song) {
+      this.setCurrentSong({ song })
+    },
+    deleteInPlaylist(id) {
+      const newList = this.playList.filter((item) => item.id !== id)
+      this.setPlayList(newList)
+    },
+    // end
+    changePlayway() {
+      this.currentPlayway = this.currentPlayway + 1
+      if (this.currentPlayway > 2) {
+        this.currentPlayway = 0
+      }
+    },
     jumpToPlayer() {
       this.$router.push({
         path: '/player'
@@ -110,9 +170,11 @@ export default {
     },
     handleTimeUpdate(e) {
       if (!this.isChanging) {
+        // const currentTime = e.target.currentTime * 1000
         this.currentTime = e.target.currentTime * 1000
         this.duration = this.currentSong.dt
         this.percent = (this.currentTime / this.duration) * 100
+
         let i = 0
         for (; i < this.lyricList.length; i++) {
           const lyric = this.lyricList[i]

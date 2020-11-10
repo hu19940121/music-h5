@@ -7,6 +7,7 @@ const state = {
   lyricList: [],
   currentLyricIndex: 0,
   currentLyricTime: 0,
+  currentPlayway: 0, // 播放方式  // 0（列表循环）,1(随机),2（单曲循环）
   playList: [], // 播放列表
   currnetPlayListId: null
 }
@@ -34,6 +35,9 @@ const mutations = {
   },
   SET_CURRENT_LYRIC_TIME(state, time) {
     state.currentLyricTime = time
+  },
+  SET_CURRENT_PLAY_WAY(state, playway) {
+    state.currentPlayway = playway
   }
 }
 const actions = {

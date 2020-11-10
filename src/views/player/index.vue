@@ -20,9 +20,13 @@
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
         <div class="scroll-content">
-          <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
+          <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
         </div>
-        <!-- <p ref="p2" class="p2">秋天不回来</p> -->
+        <div class="mark-line flex align-center justify-around">
+          <van-icon color="#4e72b8" name="play" />
+          <div class="line"></div>
+          <span class="num">00:57</span>
+        </div>
       </div>
       <div v-show=" lyricList.length === 0 ">
         <p>暂无歌词</p>
@@ -46,6 +50,7 @@ import BScroll from '@better-scroll/core'
 export default {
   data() {
     return {
+      lyricMoveIndex: 0,
       getSizeImage,
       show: false,
       enableScroll: true
@@ -78,6 +83,13 @@ export default {
       this.bs.on('beforeScrollStart', () => {
         console.log('beforeScrollStart')
         this.enableScroll = false
+      })
+
+      this.bs.on('scroll', (position) => {
+        console.log('position.y', position.y)
+        console.log('this.$refs.lry[0].clientHeight', this.$refs.lry[0].clientHeight)
+        this.lyricMoveIndex = (Math.floor(Math.abs(position.y) / this.$refs.lry[0].clientHeight) + Math.floor((this.$refs.scroll.clientHeight / 2 / this.$refs.lry[0].clientHeight))) + 1
+        console.log(this.lyricMoveIndex)
       })
       this.bs.on('scrollEnd', () => {
         console.log('scrollEnd')
@@ -136,16 +148,34 @@ export default {
       }
     }
     .lrylist {
+      width: 100%;
       text-align: center;
       height: 200px;
       overflow: hidden;
       position: relative;
+      .mark-line {
+        width: 100%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        .line {
+          height: 1px;
+          background-color: #4e72b8;
+          width: 80%;
+        }
+        .num {
+          color: #4e72b8;
+        }
+      }
       p {
         @include font_color('font_color1');
         position: relative;
         padding: 4px 0;
         &.redColor {
           @include font_color('lyric_active_font_color');
+        }
+        &.moveColor {
+          color: orange !important;
         }
       }
     }
