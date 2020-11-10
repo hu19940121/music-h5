@@ -19,10 +19,17 @@
     <div class="player flex flex-direction align-center">
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
-        <div class="scroll-content">
-          <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
+        <div class="scroll-content" @click="openShowMarkLine">
+          <van-notice-bar  :scrollable="noticeBarScrollable && index === currentLyricIndex"  ref="lry" background="#fff"  :key="item.time" v-for="(item,index) in lyricList">
+            <p ref="lryP" :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" >{{item.content}}</p>
+          </van-notice-bar>
+          <!-- <van-notice-bar
+            ref="lry"
+            text="在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。"
+          /> -->
+          <!-- <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p> -->
         </div>
-        <div class="mark-line flex align-center justify-around">
+        <div class="mark-line flex align-center justify-around" v-show="showMarkLine">
           <van-icon color="#4e72b8" name="play" />
           <div class="line"></div>
           <span class="num">00:57</span>
@@ -46,20 +53,24 @@ import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage } from '@/utils'
 import BScroll from '@better-scroll/core'
-
+// import { fraction, subtract } from 'mathjs'
 export default {
   data() {
     return {
-      lyricMoveIndex: 0,
+      showMarkLine: false,
+      lyricMoveIndex: null,
       getSizeImage,
       show: false,
-      enableScroll: true
+      enableScroll: true,
+      noticeBarScrollable: false
     }
   },
   watch: {
     currentLyricIndex(value) {
       if (this.$refs.lry[value] && this.enableScroll) {
-        this.bs.scrollToElement(this.$refs.lry[value], 300, false, true)
+        this.noticeBarScrollable = this.$refs.lry[value].$el.childNodes[0].clientWidth === this.$refs.lryP[value].clientWidth
+        console.log(this.noticeBarScrollable)
+        this.bs.scrollToElement(this.$refs.lry[value].$el, 300, false, true)
       }
     }
   },
@@ -70,29 +81,43 @@ export default {
       this.initScroll()
     })
   },
+  computed: {
+
+    ...mapState({
+      isInApp: (state) => state.app.isInApp,
+      currentSong: (state) => state.song.currentSong,
+      isPlaying: (state) => state.song.isPlaying,
+      lyricList: (state) => state.song.lyricList,
+      currentLyricIndex: (state) => state.song.currentLyricIndex
+    })
+  },
   methods: {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
-
+    openShowMarkLine() {
+      console.log('sdfdsf')
+      this.showMarkLine = true
+    },
     initScroll() {
       this.bs = new BScroll(this.$refs.scroll, {
         probeType: 3,
         click: true
       })
       this.bs.on('beforeScrollStart', () => {
-        console.log('beforeScrollStart')
+        // console.log('beforeScrollStart')
         this.enableScroll = false
       })
 
       this.bs.on('scroll', (position) => {
-        console.log('position.y', position.y)
-        console.log('this.$refs.lry[0].clientHeight', this.$refs.lry[0].clientHeight)
-        this.lyricMoveIndex = (Math.floor(Math.abs(position.y) / this.$refs.lry[0].clientHeight) + Math.floor((this.$refs.scroll.clientHeight / 2 / this.$refs.lry[0].clientHeight))) + 1
-        console.log(this.lyricMoveIndex)
+        const oneLryItemHeight = this.$refs.lry[0].$el.clientHeight
+        const ellesCount = (this.$refs.scroll.clientHeight / 2) / oneLryItemHeight - 1
+        const ynum = Math.abs(position.y)
+        const positionIndex = Math.round((ynum / oneLryItemHeight) + ellesCount)
+        this.lyricMoveIndex = positionIndex
       })
-      this.bs.on('scrollEnd', () => {
-        console.log('scrollEnd')
+      this.bs.on('scrollEnd', (position) => {
+        // console.log('scrollEnd', position)
         this.enableScroll = true
       })
     },
@@ -115,16 +140,8 @@ export default {
     gift() {
       this.show = true
     }
-  },
-  computed: {
-    ...mapState({
-      isInApp: (state) => state.app.isInApp,
-      currentSong: (state) => state.song.currentSong,
-      isPlaying: (state) => state.song.isPlaying,
-      lyricList: (state) => state.song.lyricList,
-      currentLyricIndex: (state) => state.song.currentLyricIndex
-    })
   }
+
 }
 </script>
 
@@ -136,6 +153,10 @@ export default {
     100%{-webkit-transform:rotate(360deg);}
 }
 .player-wrap {
+  /deep/.van-notice-bar__wrap{
+    display: flex;
+    justify-content: center;
+  }
   .player {
     .cover {
       display: inline-block;
@@ -170,6 +191,7 @@ export default {
       p {
         @include font_color('font_color1');
         position: relative;
+        width: auto;
         padding: 4px 0;
         &.redColor {
           @include font_color('lyric_active_font_color');
