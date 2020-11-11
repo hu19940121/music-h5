@@ -63,7 +63,8 @@ export default {
       currentLyricIndex: (state) => state.song.currentLyricIndex,
       playList: (state) => state.song.playList,
       currentSongIndex: (state) => state.song.currentSongIndex,
-      currentPlayway: (state) => state.song.currentPlayway
+      currentPlayway: (state) => state.song.currentPlayway,
+      currentMoveLyric: (state) => state.song.currentMoveLyric
     }),
     currentSongSingers() {
       if (this.currentSong.ar) {
@@ -82,6 +83,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.audio.play()
       })
+    },
+    currentMoveLyric(newValue, oldValue) {
+      console.log('newValue', newValue)
+      if (newValue.time !== oldValue.time) {
+        this.$refs.audio.currentTime = newValue.time / 1000
+      }
     }
   },
   methods: {
@@ -151,6 +158,7 @@ export default {
       this.isChanging = true
     },
     handleSlideEnd() {
+      console.log(this.$refs.audio.currentTime)
       this.$refs.audio.currentTime = ((this.percent / 100) * this.duration) / 1000
       this.isChanging = false
     }

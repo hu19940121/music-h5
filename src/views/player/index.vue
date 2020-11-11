@@ -10,18 +10,18 @@
         <svg-icon style="color:#d43c33ff;font-size:18px;" icon-class="share" @click="share"   />
       </template>
     </van-nav-bar>
-    <van-notice-bar
+    <!-- <van-notice-bar
       @click.native="gift"
       :scrollable="false"
       left-icon="volume-o"
       text="更多更能正在开发中！"
-    />
+    /> -->
     <div class="player flex flex-direction align-center">
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
-        <div class="scroll-content" @click="openShowMarkLine">
+        <div class="scroll-content" @touchmove="handleTouchmove" @touchstart="handleTouchstart">
           <van-notice-bar  :scrollable="noticeBarScrollable && index === currentLyricIndex"  ref="lry" background="#fff"  :key="item.time" v-for="(item,index) in lyricList">
-            <p ref="lryP" :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" >{{item.content}}</p>
+            <p ref="lryP" :class="{ 'redColor':currentLyricIndex === index, 'moveColor': (lyricMoveIndex === index) && showMarkLine }" >{{item.content}}</p>
           </van-notice-bar>
           <!-- <van-notice-bar
             ref="lry"
@@ -30,9 +30,9 @@
           <!-- <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p> -->
         </div>
         <div class="mark-line flex align-center justify-around" v-show="showMarkLine">
-          <van-icon color="#4e72b8" name="play" />
+          <van-icon @click="jumpToplay" color="#4e72b8" name="play" />
           <div class="line"></div>
-          <span class="num">00:57</span>
+          <span class="num">{{formatMinuteSecond(currentMoveLyric.time ) }}</span>
         </div>
       </div>
       <div v-show=" lyricList.length === 0 ">
@@ -49,14 +49,17 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage } from '@/utils'
 import BScroll from '@better-scroll/core'
 // import { fraction, subtract } from 'mathjs'
+import { formatMinuteSecond } from '@/filters/filter.js'
 export default {
   data() {
     return {
+      formatMinuteSecond,
+      timer: null,
       showMarkLine: false,
       lyricMoveIndex: null,
       getSizeImage,
@@ -89,15 +92,40 @@ export default {
       isPlaying: (state) => state.song.isPlaying,
       lyricList: (state) => state.song.lyricList,
       currentLyricIndex: (state) => state.song.currentLyricIndex
-    })
+    }),
+    currentMoveLyric() {
+      if (this.lyricMoveIndex) {
+        return this.lyricList[this.lyricMoveIndex]
+      } else {
+        return ''
+      }
+    }
   },
   methods: {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
-    openShowMarkLine() {
-      console.log('sdfdsf')
+    ...mapMutations({
+      SET_CURRENT_MOVE_LYRIC: 'song/SET_CURRENT_MOVE_LYRIC'
+
+    }),
+    handleTouchstart() {
       this.showMarkLine = true
+    },
+
+    // 停止滚动后五秒后消失
+    handleTouchmove() {
+      if (this.timer) {
+        clearTimeout(this.timer)
+      }
+      this.timer = setTimeout(() => {
+        this.showMarkLine = false
+      }, 5000)
+    },
+    jumpToplay() {
+      this.SET_CURRENT_MOVE_LYRIC(this.currentMoveLyric)
+      this.enableScroll = true
+      // console.log('jumpToplay')
     },
     initScroll() {
       this.bs = new BScroll(this.$refs.scroll, {
@@ -108,7 +136,6 @@ export default {
         // console.log('beforeScrollStart')
         this.enableScroll = false
       })
-
       this.bs.on('scroll', (position) => {
         const oneLryItemHeight = this.$refs.lry[0].$el.clientHeight
         const ellesCount = (this.$refs.scroll.clientHeight / 2) / oneLryItemHeight - 1
