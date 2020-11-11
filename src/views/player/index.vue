@@ -19,21 +19,18 @@
     <div class="player flex flex-direction align-center">
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
-        <div class="scroll-content" @touchmove="handleTouchmove" @touchstart="handleTouchstart">
-          <van-notice-bar  :scrollable="noticeBarScrollable && index === currentLyricIndex"  ref="lry" background="#fff"  :key="item.time" v-for="(item,index) in lyricList">
+        <!-- <div class="scroll-content" @touchmove="handleTouchmove" @touchstart="handleTouchstart"> -->
+        <div class="scroll-content">
+          <!-- <van-notice-bar  :scrollable="noticeBarScrollable && index === currentLyricIndex"  ref="lry" background="#fff"  :key="item.time" v-for="(item,index) in lyricList">
             <p ref="lryP" :class="{ 'redColor':currentLyricIndex === index, 'moveColor': (lyricMoveIndex === index) && showMarkLine }" >{{item.content}}</p>
-          </van-notice-bar>
-          <!-- <van-notice-bar
-            ref="lry"
-            text="在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。"
-          /> -->
-          <!-- <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p> -->
+          </van-notice-bar> -->
+          <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
         </div>
-        <div class="mark-line flex align-center justify-around" v-show="showMarkLine">
+        <!-- <div class="mark-line flex align-center justify-around" v-show="showMarkLine">
           <van-icon @click="jumpToplay" color="#4e72b8" name="play" />
           <div class="line"></div>
           <span class="num">{{formatMinuteSecond(currentMoveLyric.time ) }}</span>
-        </div>
+        </div> -->
       </div>
       <div v-show=" lyricList.length === 0 ">
         <p>暂无歌词</p>
@@ -49,16 +46,16 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage } from '@/utils'
 import BScroll from '@better-scroll/core'
 // import { fraction, subtract } from 'mathjs'
-import { formatMinuteSecond } from '@/filters/filter.js'
+// import { formatMinuteSecond } from '@/filters/filter.js'
 export default {
   data() {
     return {
-      formatMinuteSecond,
+      // formatMinuteSecond,
       timer: null,
       showMarkLine: false,
       lyricMoveIndex: null,
@@ -71,9 +68,9 @@ export default {
   watch: {
     currentLyricIndex(value) {
       if (this.$refs.lry[value] && this.enableScroll) {
-        this.noticeBarScrollable = this.$refs.lry[value].$el.childNodes[0].clientWidth === this.$refs.lryP[value].clientWidth
-        console.log(this.noticeBarScrollable)
-        this.bs.scrollToElement(this.$refs.lry[value].$el, 300, false, true)
+        // this.noticeBarScrollable = this.$refs.lry[value].$el.childNodes[0].clientWidth === this.$refs.lryP[value].clientWidth
+        // console.log(this.noticeBarScrollable)
+        this.bs.scrollToElement(this.$refs.lry[value], 300, false, true)
       }
     }
   },
@@ -92,23 +89,23 @@ export default {
       isPlaying: (state) => state.song.isPlaying,
       lyricList: (state) => state.song.lyricList,
       currentLyricIndex: (state) => state.song.currentLyricIndex
-    }),
-    currentMoveLyric() {
-      if (this.lyricMoveIndex) {
-        return this.lyricList[this.lyricMoveIndex]
-      } else {
-        return ''
-      }
-    }
+    })
+    // currentMoveLyric() {
+    //   if (this.lyricMoveIndex) {
+    //     return this.lyricList[this.lyricMoveIndex]
+    //   } else {
+    //     return ''
+    //   }
+    // }
   },
   methods: {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
-    ...mapMutations({
-      SET_CURRENT_MOVE_LYRIC: 'song/SET_CURRENT_MOVE_LYRIC'
+    // ...mapMutations({
+    //   SET_CURRENT_MOVE_LYRIC: 'song/SET_CURRENT_MOVE_LYRIC'
 
-    }),
+    // }),
     handleTouchstart() {
       this.showMarkLine = true
     },
@@ -136,13 +133,13 @@ export default {
         // console.log('beforeScrollStart')
         this.enableScroll = false
       })
-      this.bs.on('scroll', (position) => {
-        const oneLryItemHeight = this.$refs.lry[0].$el.clientHeight
-        const ellesCount = (this.$refs.scroll.clientHeight / 2) / oneLryItemHeight - 1
-        const ynum = Math.abs(position.y)
-        const positionIndex = Math.round((ynum / oneLryItemHeight) + ellesCount)
-        this.lyricMoveIndex = positionIndex
-      })
+      // this.bs.on('scroll', (position) => {
+      //   const oneLryItemHeight = this.$refs.lry[0].$el.clientHeight
+      //   const ellesCount = (this.$refs.scroll.clientHeight / 2) / oneLryItemHeight - 1
+      //   const ynum = Math.abs(position.y)
+      //   const positionIndex = Math.round((ynum / oneLryItemHeight) + ellesCount)
+      //   this.lyricMoveIndex = positionIndex
+      // })
       this.bs.on('scrollEnd', (position) => {
         // console.log('scrollEnd', position)
         this.enableScroll = true
