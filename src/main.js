@@ -9,6 +9,8 @@ import App from './App.vue'
 
 import router from './router'
 import store from './store'
+import Meta from 'vue-meta'
+Vue.use(Meta)
 
 // 设置 js中可以访问 $cdn
 import { $cdn } from '@/config'
@@ -44,5 +46,9 @@ new Vue({
   router,
   i18n,
   store,
+  // 添加到这里,这里的render-event和vue.config.js里面的renderAfterDocumentEvent配置名称一致
+  mounted() {
+    document.dispatchEvent(new Event('render-event'))
+  },
   render: h => h(App)
 })

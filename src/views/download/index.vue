@@ -90,7 +90,7 @@ a {
       margin: 0 auto;
       width: 108px;
       height: 108px;
-      background: url(https://resource.kaier001.com/logo.jpg) no-repeat 0 0;
+      background: url(https://resource.kaier001.com/logo.png) no-repeat 0 0;
       background-size: 100% auto;
     }
   }
