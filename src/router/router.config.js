@@ -73,6 +73,12 @@ export const constantRouterMap = [
     meta: {
       keepAlive: false
     }
+  }, {
+    path: '/comment',
+    component: () => import('@/views/comment/index'),
+    meta: {
+      keepAlive: false
+    }
   }
 
 ]

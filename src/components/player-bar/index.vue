@@ -104,7 +104,10 @@ export default {
     }),
     jumpToPlayer() {
       this.$router.push({
-        path: '/player'
+        path: '/player',
+        query: {
+          id: this.currentSong.id
+        }
       })
     },
     play() {

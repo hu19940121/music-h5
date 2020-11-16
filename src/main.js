@@ -9,8 +9,8 @@ import App from './App.vue'
 
 import router from './router'
 import store from './store'
-import Meta from 'vue-meta'
-Vue.use(Meta)
+// import Meta from 'vue-meta'
+// Vue.use(Meta)
 
 // 设置 js中可以访问 $cdn
 import { $cdn } from '@/config'

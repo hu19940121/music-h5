@@ -36,6 +36,11 @@
         <p>暂无歌词</p>
       </div>
     </div>
+    <div class="bottom-button flex justify-around margin-top">
+      <svg-icon class="icon"  icon-class="aixin"   @click="forbid" />
+      <svg-icon class="icon" icon-class="xiazai"   @click="forbid" />
+      <svg-icon @click="linkToComment" class="icon" icon-class="pinglun"   />
+    </div>
     <van-dialog v-model="show" title="赏杯奶茶？" show-cancel-button>
       <div style="text-align:center;">
         <img style="width:80%;" src="./zhifu.jpg" />
@@ -50,6 +55,7 @@ import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage } from '@/utils'
 import BScroll from '@better-scroll/core'
+import { Toast } from 'vant'
 // import { fraction, subtract } from 'mathjs'
 // import { formatMinuteSecond } from '@/filters/filter.js'
 export default {
@@ -75,8 +81,7 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted')
-    this.$route.query.id && this.playMusicByRouterId()
+    (this.$route.query.id && !this.isPlaying) && this.playMusicByRouterId()
     this.$nextTick(() => {
       this.initScroll()
     })
@@ -102,10 +107,21 @@ export default {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
+    forbid() {
+      Toast('未开放')
+    },
     // ...mapMutations({
     //   SET_CURRENT_MOVE_LYRIC: 'song/SET_CURRENT_MOVE_LYRIC'
 
     // }),
+    linkToComment() {
+      this.$router.push({
+        path: '/comment',
+        query: {
+          id: this.currentSong.id
+        }
+      })
+    },
     handleTouchstart() {
       this.showMarkLine = true
     },
@@ -170,6 +186,9 @@ export default {
 </script>
 
 <style lang="scss">
+.icon{
+  font-size: 24px;
+}
 @keyframes changeright {
     0%{-webkit-transform:rotate(0deg);}
     50%{-webkit-transform:rotate(180deg);}
