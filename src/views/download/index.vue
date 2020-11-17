@@ -12,7 +12,7 @@
         <p class="sub f-tc">(若无打开按钮，则 <a class="f-tdu s-fc4" href="yunmusic://">点此打开</a> )</p>
         <div class="wrap f-vhc">
           <div class="logo"></div>
-          <a href="https://music.kaier001.com/yunmusic.apk" download="" class="btn f-tc">立即下载</a>
+          <a href="https://resource.kaier001.com/yunmusic.apk" download="" class="btn f-tc">立即下载</a>
         </div>
       </div>
     </div>
