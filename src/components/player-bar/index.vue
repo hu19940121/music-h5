@@ -1,37 +1,42 @@
 <template>
-  <div class="player-bar flex justify-between align-center padding-lr-xs">
-    <div class="progress-wrap">
-      <van-slider active-color="#d43c33ff" v-model="percent" @drag-end="handleSlideEnd" @input="handleSlideChange" @change="handleSlideEnd">
-        <template #button>
-          <div class="custom-button"></div>
-        </template>
-      </van-slider>
-    </div>
-    <div style="width: 100%;" class="flex justify-between align-center "  @click="jumpToPlayer">
-      <div class="left flex align-center" >
-        <img class="cover"  :src="getSizeImage(currentSongAlbumImg)" alt="">
-        <div class="info padding-left-xs">
-          <p class="name"> {{ currentSong.name }} </p>
-          <p class="artist"> {{currentSongSingers }} </p>
+  <div class="placeholder"  v-show="currentSong.url" >
+    <transition name="fade">
+      <div v-show="currentSong.url" class="player-bar flex justify-between align-center padding-lr-xs">
+        <div class="progress-wrap">
+          <van-slider active-color="#d43c33ff" v-model="percent" @drag-end="handleSlideEnd" @input="handleSlideChange" @change="handleSlideEnd">
+            <template #button>
+              <div class="custom-button"></div>
+            </template>
+          </van-slider>
         </div>
-      </div>
-      <div class="right flex align-center">
-        <div class="time padding-right-sm">
-          <span> {{ currentTime | formatMinuteSecond }} </span>/
-          <span>{{ currentSong.dt | formatMinuteSecond}} </span>
+        <div style="width: 100%;" class="flex justify-between align-center "  @click="jumpToPlayer">
+          <div class="left flex align-center" >
+            <img class="cover"  :src="getSizeImage(currentSongAlbumImg)" alt="">
+            <div class="info padding-left-xs">
+              <p class="name"> {{ currentSong.name }} </p>
+              <p class="artist"> {{currentSongSingers }} </p>
+            </div>
+          </div>
+          <div class="right flex align-center">
+            <div class="time padding-right-sm">
+              <span> {{ currentTime | formatMinuteSecond }} </span>/
+              <span>{{ currentSong.dt | formatMinuteSecond}} </span>
+            </div>
+            <van-circle v-if="isPlaying" layer-color="#eeeeee" color="#d43c33ff"   v-model="percent" size="34" :speed="100">
+              <svg-icon @click.stop="pause" className="icon" icon-class="pause"  />
+            </van-circle>
+            <van-circle  v-else color="#666" v-model="currentRate2"  size="34">
+              <svg-icon @click.stop="play" className="icon" icon-class="play"   />
+            </van-circle>
+            <svg-icon  @click.stop="showList = true"  class="list-icon margin-left-xs" icon-class="list"   />
+          </div>
         </div>
-        <van-circle v-if="isPlaying" layer-color="#eeeeee" color="#d43c33ff"   v-model="percent" size="34" :speed="100">
-          <svg-icon @click.stop="pause" className="icon" icon-class="pause"  />
-        </van-circle>
-        <van-circle  v-else color="#666" v-model="currentRate2"  size="34">
-          <svg-icon @click.stop="play" className="icon" icon-class="play"   />
-        </van-circle>
-        <svg-icon  @click.stop="showList = true"  class="list-icon margin-left-xs" icon-class="list"   />
+        <audio @ended="handleEnded" @timeupdate="handleTimeUpdate" @play="setIsplaying(true)" @pause="setIsplaying(false)" ref="audio"></audio>
+        <playListCom v-model="showList"/>
       </div>
-    </div>
-    <audio @ended="handleEnded" @timeupdate="handleTimeUpdate" @play="setIsplaying(true)" @pause="setIsplaying(false)" ref="audio"></audio>
-    <playListCom v-model="showList"/>
+    </transition>
   </div>
+
 </template>
 
 <script>
@@ -170,6 +175,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: all 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  /* opacity: 0; */
+  transform: translateY(100%);
+}
+.placeholder { height: 50px;}
 .player-bar {
   position: fixed;
   height: 50px;
@@ -178,7 +191,7 @@ export default {
   left: 0;
   right: 0;
   background-color: #fff;
-  border-top: 1px solid #eeeeee;
+  /* border-top: 1px solid #eeeeee; */
   @include background_color("player_bar");
   .list-icon {
     font-size: 20px;

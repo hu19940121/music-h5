@@ -1,13 +1,22 @@
 <template>
-  <div id="app" :class="[{ paddingBottom50: currentSong.url }]">
+  <!-- <div id="app" :class="[{ paddingBottom50: currentSong.url }]"> -->
+  <div id="app">
+
      <keep-alive >
         <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
       <router-view v-if="!$route.meta.keepAlive"></router-view>
     <!-- <router-view /> -->
-    <transition name="fade">
-      <playerBar v-show="currentSong.url" />
-    </transition>
+    <playerBar  />
+<!--
+    <van-tabbar placeholder route>
+  <van-tabbar-item replace to="/home" icon="home-o">
+    标签
+  </van-tabbar-item>
+  <van-tabbar-item replace to="/search" icon="search">
+    标签
+  </van-tabbar-item>
+</van-tabbar> -->
   </div>
 </template>
 <script>
@@ -97,13 +106,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.fade-enter-active, .fade-leave-active {
-  transition: all 1s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  /* opacity: 0; */
-  transform: translateY(100%);
-}
+
 .paddingBottom50 {
   padding-bottom: 50px;
 }
