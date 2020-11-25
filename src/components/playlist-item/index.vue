@@ -5,7 +5,7 @@
         <img src="~assets/images/erji.svg" alt="">
         {{ info.playCount | getCount}}
       </div>
-      <van-image style="width:100%;height:100%;" fit="cover" lazy-load  :src="getSizeImage(info.picUrl || info.coverImgUrl,200)"  />
+      <van-image style="width:100%;height:100%;" radius="8" fit="cover" lazy-load  :src="getSizeImage(info.picUrl || info.coverImgUrl,200)"  />
     </div>
     <p class="info two-lines">
       {{ info.name }}
@@ -31,7 +31,7 @@ export default {
   methods: {
     jumpToPlaylist(item) {
       this.$router.push({
-        path: `/playlist?id=${item.id}`
+        path: `/playlistDetail?id=${item.id}`
       })
     }
   }
@@ -42,9 +42,11 @@ export default {
 .cover {
   width: 122px;
   height: 122px;
+  border-radius: 4px;
   position: relative;
   .num {
     position: absolute;
+    z-index: 10;
     right: 4px;
     top:2px;
     font-size: 12px;

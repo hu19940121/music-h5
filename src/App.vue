@@ -30,7 +30,6 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted--------')
     window.document.documentElement.setAttribute('data-theme', this.theme)
     // this.loadScript()
   },
@@ -41,7 +40,6 @@ export default {
     '$route.path': {
       handler(newVal) {
         if (this.isLoadScript) {
-          console.log('已经加载过js了')
           // eslint-disable-next-line no-undef
           uni.postMessage({
             data: {
@@ -50,7 +48,6 @@ export default {
             }
           })
         } else {
-          console.log('还没有加载js')
           this.loadScript().then(() => {
             this.isLoadScript = true
             // eslint-disable-next-line no-undef
@@ -62,8 +59,6 @@ export default {
             })
           })
         }
-        console.log('watch--------')
-
         // eslint-disable-next-line no-undef
       },
       immediate: true // 刷新加载 立马触发一次handler

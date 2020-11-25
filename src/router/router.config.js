@@ -11,11 +11,17 @@ export const constantRouterMap = [
       title: '首页',
       keepAlive: true
     }
+
+  }, {
+    path: '/playlistDetail',
+    component: () => import('@/views/playlistDetail/index'),
+    meta: {
+      keepAlive: false
+    }
   }, {
     path: '/playlist',
     component: () => import('@/views/playlist/index'),
     meta: {
-      title: '歌曲列表',
       keepAlive: false
     }
   }, {
@@ -76,6 +82,12 @@ export const constantRouterMap = [
   }, {
     path: '/comment',
     component: () => import('@/views/comment/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/test',
+    component: () => import('@/views/test/index'),
     meta: {
       keepAlive: false
     }

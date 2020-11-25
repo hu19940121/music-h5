@@ -165,11 +165,23 @@ export default {
         forbidClick: true,
         message: '下载中'
       })
-      axios.get(this.currentSong.url, { responseType: 'blob' }).then((res) => {
+
+      // https://kaier001.com/api/v2/down/downMusic?url=
+      // axios.get(this.currentSong.url, { responseType: 'blob' }).then((res) => {
+      //   toast.message = '下载完成'
+      //   Toast.clear()
+      //   createDownload(this.currentSong.name, res.data)
+      // }).catch(() => {
+      //   Toast.clear()
+      // })
+
+      axios.get(`https://kaier001.com/api/v2/down/downMusic?url=${this.currentSong.url}`, { responseType: 'blob' }).then((res) => {
+        console.log('sdfsf')
         toast.message = '下载完成'
         Toast.clear()
         createDownload(this.currentSong.name, res.data)
-      }).catch(() => {
+      }).catch((err) => {
+        console.log('err', err)
         Toast.clear()
       })
     }

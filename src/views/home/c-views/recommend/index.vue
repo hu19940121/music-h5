@@ -1,7 +1,8 @@
 <template>
   <div class="recommend">
-    <div class="title margin-tb-sm">
-      {{ $t('home.recommendView.recommendListText') }}
+    <div class="title margin-tb-sm flex justify-between">
+      <span> {{ $t('home.recommendView.recommendListText') }}</span>
+      <p @click="morePlaylist" class="padding-right-sm flex align-center"> 更多 <van-icon name="arrow" /></p>
     </div>
     <div class="list flex flex-wrap">
       <div  v-for="(gedan,index) in gedanList" :key="gedan.id" :class="(index + 1) % 3 === 0 ? 'list-item ' : 'list-item margin-right-xxs'">
@@ -75,6 +76,11 @@ export default {
     more() {
       this.$router.push({
         path: '/singerCate'
+      })
+    },
+    morePlaylist() {
+      this.$router.push({
+        path: '/playList'
       })
     }
   }
