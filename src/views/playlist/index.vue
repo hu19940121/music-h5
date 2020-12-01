@@ -156,6 +156,7 @@ export default {
       })
     },
     chooseTag(tag) {
+      console.log('chooseTag')
       this.show = false
       this.active = tag.name
       this.initParams()
