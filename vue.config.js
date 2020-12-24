@@ -2,6 +2,7 @@
 const path = require('path')
 const defaultSettings = require('./src/config/index.js')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+// const SentryWebpackPlugin = require('@sentry/webpack-plugin')
 // const PrerenderSPAPlugin = require('prerender-spa-plugin')
 // const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
 
@@ -131,6 +132,22 @@ module.exports = {
     // if (IS_PROD) {
     //   // externals
     //   config.externals = externals
+    // }
+
+    // 弄了两个小时 没弄成功 文档写的像一坨狗屎
+    // return {
+    //   plugins: [
+    //     new SentryWebpackPlugin({
+    //       // sentry-cli configuration
+    //       authToken: 'fc7bd7fd9fda4ddbb58c149fb100a18171c0990e589f4c1e9df3b3429bdf5a52',
+    //       org: 'hushihao666',
+    //       project: 'music-h5',
+
+    //       // webpack specific configuration
+    //       include: './dist',
+    //       ignore: ['node_modules', 'vue.config.js']
+    //     })
+    //   ]
     // }
   },
 

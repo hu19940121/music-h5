@@ -1,7 +1,7 @@
 <template>
   <div @click="jumpToPlaylist(info)">
     <div class="cover">
-      <div class="num">
+      <div class="num" v-if="info.playCount">
         <img src="~assets/images/erji.svg" alt="">
         {{ info.playCount | getCount}}
       </div>

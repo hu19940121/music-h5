@@ -49,7 +49,7 @@
 <script>
 import songItem from '@/components/song-item'
 import { mapState, mapActions } from 'vuex'
-import { getPlaylistDetail } from '@/api/song'
+import { getPlaylistDetail, getSongDetail } from '@/api/song'
 export default {
   components: {
     songItem
@@ -91,7 +91,15 @@ export default {
       getPlaylistDetail({ id: this.$route.query.id }).then((res) => {
         this.loading = false
         this.playlistInfo = res.playlist
-        this.list = res.playlist.tracks
+        let idsString = ''
+        res.playlist.trackIds.map((trackInfo) => {
+          idsString = idsString + trackInfo.id + ','
+        })
+        idsString = idsString.substring(0, idsString.length - 1)
+        getSongDetail(idsString).then((res) => {
+          this.list = res.songs
+        })
+        // this.trackIds = res.playlist.trackIds
       }).catch(() => {
         this.loading = false
       })

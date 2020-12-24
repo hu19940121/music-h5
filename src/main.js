@@ -4,7 +4,26 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 import Vue from 'vue'
+
+// sentry监控
+// import * as Sentry from '@sentry/vue'
+
+// import { Integrations } from '@sentry/tracing'
+// Sentry.init({
+//   Vue,
+//   dsn: 'http://3c05d2752f3b458a8d97adc6046d17d9@music.kaier001.com:9000/4',
+//   autoSessionTracking: true,
+//   integrations: [
+//     new Integrations.BrowserTracing()
+//   ],
+
+//   // We recommend adjusting this value in production, or using tracesSampler
+//   // for finer control
+//   tracesSampleRate: 1.0
+// })
+
 import App from './App.vue'
+
 // import Vconsole from 'vconsole' // 调试
 
 import router from './router'
@@ -47,8 +66,8 @@ new Vue({
   i18n,
   store,
   // 添加到这里,这里的render-event和vue.config.js里面的renderAfterDocumentEvent配置名称一致
-  mounted() {
-    document.dispatchEvent(new Event('render-event'))
-  },
+  // mounted() {
+  //   document.dispatchEvent(new Event('render-event'))
+  // },
   render: h => h(App)
 })

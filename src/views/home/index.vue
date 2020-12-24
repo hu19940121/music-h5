@@ -107,6 +107,7 @@ export default {
       })
     },
     linkToDownload() {
+      // console.log('sdfsdf', sdfsd)
       var ua = navigator.userAgent.toLowerCase()
       // eslint-disable-next-line eqeqeq
       if (ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/QQ/i) == 'qq') {

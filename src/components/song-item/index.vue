@@ -3,7 +3,9 @@
     <div class="left flex align-center">
       <span v-if="showOrder" :class="['order','padding-right-xs', { 'red': order <=3 } ]"> {{ order }} </span>
       <div>
-        <p class="name">{{ songInfo.name }}</p>
+        <p class="name">
+          <span v-html="songInfo.name"></span>
+        </p>
         <p class="desc" v-if="isHotSongs">
           <span :key="artist.id" v-for="artist in songInfo.ar">{{ artist.name }} </span> - {{ songInfo.al.name }}
         </p>
