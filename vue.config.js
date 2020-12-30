@@ -57,7 +57,7 @@ module.exports = {
     },
     proxy: {
       '/musicApi': {
-        target: 'http://kaier001.com:3000',
+        target: 'http://music.kaier001.com:3000/',
         changeOrigin: true,
         pathRewrite: {
           '^/musicApi': ''
