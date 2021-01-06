@@ -7,4 +7,5 @@ module.exports = {
   APPSECRET: 'xxx',
   $cdn: 'https://imgs.solui.cn',
   vconsole: 'on' // 是否开启调试模式
+
 }

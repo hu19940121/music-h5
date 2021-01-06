@@ -7,8 +7,10 @@ import Vue from 'vue'
 
 import VueSocketIO from 'vue-socket.io'
 Vue.use(new VueSocketIO({
+
   debug: true,
-  connection: 'http://127.0.0.1:7002' // 服务端连接
+  connection: 'http://127.0.0.1:7002', // 服务端连接
+  options: { autoConnect: false }
 }))
 
 // sentry监控
