@@ -86,8 +86,20 @@ export const constantRouterMap = [
       keepAlive: false
     }
   }, {
-    path: '/test',
+    path: '/shipin',
     component: () => import('@/views/test/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/yuandan',
+    component: () => import('@/views/yuandan/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/laoliang',
+    component: () => import('@/views/laoliang/index'),
     meta: {
       keepAlive: false
     }

@@ -107,6 +107,5 @@ export default {
 }
 #app {
   font-size: 14px;
-
 }
 </style>
