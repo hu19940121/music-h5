@@ -96,4 +96,20 @@ export function getBanners() {
     hideloading: true
   })
 }
+// 获取歌曲评论
+export function getComment(params) {
+  return request({
+    params,
+    url: '/musicApi/comment/music',
+    method: 'get'
+  })
+}
+// 获取楼层评论
+export function getCommentFloor(params) {
+  return request({
+    params,
+    url: '/musicApi/comment/floor',
+    method: 'get'
+  })
+}
 

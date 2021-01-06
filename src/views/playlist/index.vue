@@ -1,165 +1,208 @@
 <template>
   <div class="playlist">
-      <van-nav-bar
-        z-index="100"
-        fixed
-        placeholder
-        title="歌单详情"
-        left-text="返回"
-        left-arrow
-        @click-left="$router.go(-1)"
-      >
-        <template #right >
-          <div @click="share" v-if="isInApp">
-            <svg-icon style="color:#d43c33ff;font-size:18px;" icon-class="share"    />
-          </div>
-        </template>
-      </van-nav-bar>
-      <div class="banner-wrap">
-        <div class="banner" :style="{ background:`url(${playlistInfo.coverImgUrl}) no-repeat` }">
-
+    <van-nav-bar
+      ref="navBar"
+      z-index="100"
+      fixed
+      placeholder
+      title="歌单广场"
+      left-text="返回"
+      left-arrow
+      @click-left="$router.go(-1)"
+    >
+    </van-nav-bar>
+    <div :style="{height: tabsOffsetTop + 'px'}">
+      <div class="tabs-container flex justify-between align-center" :style="{top: tabsOffsetTop + 'px'}">
+        <div class="left">
+          <van-tabs v-model="active" @change="handleChange">
+            <van-tab name="全部" :title="active"></van-tab>
+            <van-tab name="华语" title="华语"></van-tab>
+            <van-tab name="流行" title="流行"></van-tab>
+            <van-tab name="清晨" title="清晨"></van-tab>
+            <van-tab name="怀旧" title="怀旧"></van-tab>
+            <van-tab name="综艺" title="综艺"></van-tab>
+          </van-tabs>
         </div>
-        <div class="content flex">
-          <div class="left">
-            <img :src="playlistInfo.coverImgUrl" alt="">
-          </div>
-          <div class="right padding-left-sm">
-            <p>{{ playlistInfo.name }}</p>
-            <div class="info flex align-center margin-top-xs" v-if="playlistInfo.creator">
-              <img  :src="playlistInfo.creator.avatarUrl" alt="">
-              <span class="padding-left-xs">{{ playlistInfo.creator.nickname }}</span>
+        <div class="right">
+          <svg-icon class="icon" icon-class="siye" @click="more"   />
+        </div>
+      </div>
+    </div>
+
+    <div class="padding-top-xs" >
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh"  ref="listContainer">
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+          offset="100"
+          :immediate-check="false"
+        >
+          <div class="van-clearfix">
+            <div class="list flex flex-wrap">
+              <div v-for="(gedan,index) in list" :key="gedan.id" :class="(index + 1) % 3 === 0 ? 'list-item ' : 'list-item margin-right-xxs'">
+                <playlistItem :info="gedan" />
+              </div>
             </div>
           </div>
+        </van-list>
+      </van-pull-refresh>
+    </div>
+    <van-popup :close-on-click-overlay="false" v-model="show" position="bottom" :style="{ height: '100%' }">
+      <van-nav-bar
+        z-index="101"
+        fixed
+        placeholder
+        title="歌单标签"
+        left-text="返回"
+        left-arrow
+        @click-left="show =false"
+      >
+      </van-nav-bar>
+      <div class="cate-list padding-top-sm" v-for="(cate,index) in cateList" :key="index">
+        <p class="cate-list-name padding-left-xs">
+          {{ cate.cateName }}
+        </p>
+        <div class="cate-list-box flex flex-wrap">
+          <div @click="chooseTag(tag)" class="cate-item" v-for=" tag in cate.list" :key="tag.id">{{ tag.name }}</div>
         </div>
       </div>
-
-      <div class="title">
-        歌曲列表
-      </div>
-      <van-skeleton  :row="10" :loading="loading">
-        <div class="list">
-          <songItem :playList="list" isHotSongs  :order="index + 1" :songInfo="songInfo" :key="songInfo.id" v-for="(songInfo,index) in list" />
-        </div>
-        {{ list.length === 0 ? '暂无歌曲' : '' }}
-      </van-skeleton>
+    </van-popup>
 
   </div>
 </template>
 
 <script>
-import songItem from '@/components/song-item'
-import { mapState, mapActions } from 'vuex'
-import { getPlaylistDetail } from '@/api/song'
+import { getPlaylist, getPlaylistCatlist } from '@/api/playlist'
+import playlistItem from '@/components/playlist-item'
+const initPageSize = 21
+const initPageNum = 1
 export default {
-  components: {
-    songItem
-  },
   data() {
     return {
-      loading: false,
+      cateList: [],
+      show: false,
+      tabsOffsetTop: 0,
+
+      active: '全部',
+      refreshing: false,
       list: [],
-      playlistInfo: {
-        creator: {}
-      }
+      loading: false,
+      finished: false,
+      pageNum: initPageNum,
+      pageSize: initPageSize
     }
   },
-
-  mounted() {
-    this.getPlaylistDetail()
+  components: {
+    playlistItem
   },
-  computed: {
-    ...mapState({
-      isInApp: (state) => state.app.isInApp
-    })
+  mounted() {
+    this.tabsOffsetTop = this.$refs.navBar.height
+    console.log('tabsOffsetTop', this.tabsOffsetTop)
+    this.getPlaylist()
   },
   methods: {
-    ...mapActions({
-      setCurrentSong: 'song/setCurrentSong'
-    }),
-    share() {
-      // eslint-disable-next-line no-undef
-      uni.postMessage({
-        data: {
-          action: 'sharePlayList',
-          text: `分享歌单：${this.playlistInfo.name}`,
-          href: location.href
-        }
+    initParams() {
+      this.pageSize = initPageSize
+      this.pageNum = initPageNum
+      this.list = []
+    },
+    onLoad() {
+      console.log('onlaod')
+      this.pageNum = this.pageNum + 1
+      this.getPlaylist()
+    },
+    onRefresh() {
+      this.finished = false
+      this.loading = true
+      this.pageNum = 1
+      this.list = []
+      this.getPlaylist()
+    },
+    handleChange() {
+      this.initParams()
+      this.getPlaylist()
+    },
+    getPlaylist() {
+      const params = {
+        cat: this.active,
+        limit: this.pageSize,
+        offset: (this.pageNum - 1) * this.pageSize
+      }
+      this.loading = true
+      getPlaylist(params).then((res) => {
+        this.loading = false
+        this.refreshing = false
+        this.list = this.list.concat(res.playlists)
+        this.finished = !res.more
+        console.log(res)
       })
     },
-    getPlaylistDetail() {
-      this.loading = true
-      getPlaylistDetail({ id: this.$route.query.id }).then((res) => {
-        this.loading = false
-        this.playlistInfo = res.playlist
-        this.list = res.playlist.tracks
-      }).catch(() => {
-        this.loading = false
+    hanleData(categories, subs) {
+      const finalList = []
+      Object.keys(categories).forEach((key) => {
+        finalList.push({
+          cateName: categories[key],
+          list: subs.filter((sub) => sub.category === ~~key)
+        })
       })
+      return finalList
+    },
+    getPlaylistCatlist() {
+      getPlaylistCatlist().then((res) => {
+        const { categories, sub } = res
+        this.cateList = this.hanleData(categories, sub)
+      })
+    },
+    chooseTag(tag) {
+      console.log('chooseTag')
+      this.show = false
+      this.active = tag.name
+      this.initParams()
+      this.getPlaylist()
+    },
+    more() {
+      this.show = true
+      this.getPlaylistCatlist()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.playlist {
-  .banner-wrap {
-    position: relative;
-    width: 100%;
-    height: 170px;
-    overflow: hidden;
-    .banner {
-      position: relative;
-      width: 100%;
-      height: 170px;
-      background-size: cover;
-      filter: blur(10px);
-      background-position: 50%;
-      &:after {
-        content: '';
-        position: absolute;
-        top:0;
-        left:0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0,0.25);
-        z-index: 1;
-      }
-    }
-    .content {
-
-      width: 90%;
-
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-      z-index: 2;
-      .left {
-        flex: 1;
-        width: 126px;
-        height: 126px;
-        img { width: 100%;height: 100%; }
-      }
-      .right {
-        color: #fff;
-        flex: 1.5;
-        .info {
-          img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-          }
-        }
-      }
-    }
+.list {
+  .margin-right-xxs {
+    margin-right: 4px;
   }
-
-  .title {
-    padding: 4px;
-    font-size: 12px;
-    @include background_color('background_color1');
-    @include font_color('font_color1')
-    /* background-color: #eeeff0; */
+  .list-item {
+    width: 122px;
+    margin-bottom: 10px;
+  }
+}
+.tabs-container {
+  width: 100%;
+  position: fixed;
+  z-index: 999;
+  background-color: #fff;
+  .icon {
+    font-size: 22px;
+  }
+  .left {
+    width: 90%;
+  }
+  .right {
+    width: 10%;
+    text-align: center;
+  }
+}
+.cate-list {
+  .cate-list-box {
+    .cate-item {
+      width: 25%;
+      text-align: center;
+      padding: 10px 0;
+    }
   }
 }
 </style>

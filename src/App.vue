@@ -1,13 +1,22 @@
 <template>
-  <div id="app" :class="[{ paddingBottom50: currentSong.url }]">
+  <!-- <div id="app" :class="[{ paddingBottom50: currentSong.url }]"> -->
+  <div id="app">
+
      <keep-alive >
         <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
       <router-view v-if="!$route.meta.keepAlive"></router-view>
     <!-- <router-view /> -->
-    <transition name="fade">
-      <playerBar v-show="currentSong.url" />
-    </transition>
+    <playerBar  />
+<!--
+    <van-tabbar placeholder route>
+  <van-tabbar-item replace to="/home" icon="home-o">
+    标签
+  </van-tabbar-item>
+  <van-tabbar-item replace to="/search" icon="search">
+    标签
+  </van-tabbar-item>
+</van-tabbar> -->
   </div>
 </template>
 <script>
@@ -21,7 +30,6 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted--------')
     window.document.documentElement.setAttribute('data-theme', this.theme)
     // this.loadScript()
   },
@@ -32,7 +40,6 @@ export default {
     '$route.path': {
       handler(newVal) {
         if (this.isLoadScript) {
-          console.log('已经加载过js了')
           // eslint-disable-next-line no-undef
           uni.postMessage({
             data: {
@@ -41,7 +48,6 @@ export default {
             }
           })
         } else {
-          console.log('还没有加载js')
           this.loadScript().then(() => {
             this.isLoadScript = true
             // eslint-disable-next-line no-undef
@@ -53,8 +59,6 @@ export default {
             })
           })
         }
-        console.log('watch--------')
-
         // eslint-disable-next-line no-undef
       },
       immediate: true // 刷新加载 立马触发一次handler
@@ -97,18 +101,11 @@ export default {
 }
 </script>
 <style lang="scss">
-.fade-enter-active, .fade-leave-active {
-  transition: all 1s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  /* opacity: 0; */
-  transform: translateY(100%);
-}
+
 .paddingBottom50 {
   padding-bottom: 50px;
 }
 #app {
   font-size: 14px;
-
 }
 </style>

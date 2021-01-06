@@ -11,11 +11,17 @@ export const constantRouterMap = [
       title: '首页',
       keepAlive: true
     }
+
+  }, {
+    path: '/playlistDetail',
+    component: () => import('@/views/playlistDetail/index'),
+    meta: {
+      keepAlive: false
+    }
   }, {
     path: '/playlist',
     component: () => import('@/views/playlist/index'),
     meta: {
-      title: '歌曲列表',
       keepAlive: false
     }
   }, {
@@ -70,6 +76,36 @@ export const constantRouterMap = [
   }, {
     path: '/download',
     component: () => import('@/views/download/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/comment',
+    component: () => import('@/views/comment/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/shipin',
+    component: () => import('@/views/test/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/yuandan',
+    component: () => import('@/views/yuandan/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/laoliang',
+    component: () => import('@/views/laoliang/index'),
+    meta: {
+      keepAlive: false
+    }
+  }, {
+    path: '/socket',
+    component: () => import('@/views/socket/index'),
     meta: {
       keepAlive: false
     }

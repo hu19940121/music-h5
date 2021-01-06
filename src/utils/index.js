@@ -116,3 +116,16 @@ export function getSizeImage(imgUrl, size = 100) {
 export function getRandomNumber(num) {
   return Math.floor(Math.random() * num)
 }
+
+export function createDownload(name, data) {
+  const blob = new Blob([data], { type: 'audio/mpeg;charset=utf-8' })
+  const downloadElement = document.createElement('a')
+  const href = window.URL.createObjectURL(blob)
+  downloadElement.href = href
+  downloadElement.download = name + '.mp3'
+  document.body.appendChild(downloadElement)
+  downloadElement.click()
+  document.body.removeChild(downloadElement)
+  window.URL.revokeObjectURL(href)
+}
+

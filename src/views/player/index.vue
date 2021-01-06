@@ -1,9 +1,12 @@
 <template>
   <div class="player-wrap">
+    <div class="player-wrap-cover" :style="`background:url(${ currentSong.al && currentSong.al.picUrl })`"></div>
     <van-nav-bar
+      style="background:transparent !important;"
       :title="currentSong.name"
       left-text="返回"
       left-arrow
+      placeholder
       @click-left="$router.go(-1)"
     >
       <template #right v-if="isInApp">
@@ -19,22 +22,18 @@
     <div class="player flex flex-direction align-center">
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
-        <!-- <div class="scroll-content" @touchmove="handleTouchmove" @touchstart="handleTouchstart"> -->
         <div class="scroll-content">
-          <!-- <van-notice-bar  :scrollable="noticeBarScrollable && index === currentLyricIndex"  ref="lry" background="#fff"  :key="item.time" v-for="(item,index) in lyricList">
-            <p ref="lryP" :class="{ 'redColor':currentLyricIndex === index, 'moveColor': (lyricMoveIndex === index) && showMarkLine }" >{{item.content}}</p>
-          </van-notice-bar> -->
           <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
         </div>
-        <!-- <div class="mark-line flex align-center justify-around" v-show="showMarkLine">
-          <van-icon @click="jumpToplay" color="#4e72b8" name="play" />
-          <div class="line"></div>
-          <span class="num">{{formatMinuteSecond(currentMoveLyric.time ) }}</span>
-        </div> -->
       </div>
       <div v-show=" lyricList.length === 0 ">
         <p>暂无歌词</p>
       </div>
+    </div>
+    <div class="bottom-button flex justify-around margin-top">
+      <svg-icon class="anction-icon"  icon-class="aixin"   @click="forbid" />
+      <svg-icon class="anction-icon" icon-class="xiazai"   @click="downloadMusic" />
+      <svg-icon @click="linkToComment" class="anction-icon" icon-class="pinglun"   />
     </div>
     <van-dialog v-model="show" title="赏杯奶茶？" show-cancel-button>
       <div style="text-align:center;">
@@ -48,10 +47,10 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
-import { getSizeImage } from '@/utils'
+import { getSizeImage, createDownload } from '@/utils'
 import BScroll from '@better-scroll/core'
-// import { fraction, subtract } from 'mathjs'
-// import { formatMinuteSecond } from '@/filters/filter.js'
+import { Toast } from 'vant'
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -68,15 +67,18 @@ export default {
   watch: {
     currentLyricIndex(value) {
       if (this.$refs.lry[value] && this.enableScroll) {
-        // this.noticeBarScrollable = this.$refs.lry[value].$el.childNodes[0].clientWidth === this.$refs.lryP[value].clientWidth
-        // console.log(this.noticeBarScrollable)
         this.bs.scrollToElement(this.$refs.lry[value], 300, false, true)
       }
+    },
+    // 歌词变了会调整对应的dom 结构 dom结构改变要执行refresh方法
+    lyricList() {
+      this.$nextTick(() => {
+        this.bs.refresh()
+      })
     }
   },
   mounted() {
-    console.log('mounted')
-    this.$route.query.id && this.playMusicByRouterId()
+    (this.$route.query.id && !this.isPlaying) && this.playMusicByRouterId()
     this.$nextTick(() => {
       this.initScroll()
     })
@@ -90,22 +92,22 @@ export default {
       lyricList: (state) => state.song.lyricList,
       currentLyricIndex: (state) => state.song.currentLyricIndex
     })
-    // currentMoveLyric() {
-    //   if (this.lyricMoveIndex) {
-    //     return this.lyricList[this.lyricMoveIndex]
-    //   } else {
-    //     return ''
-    //   }
-    // }
   },
   methods: {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
-    // ...mapMutations({
-    //   SET_CURRENT_MOVE_LYRIC: 'song/SET_CURRENT_MOVE_LYRIC'
-
-    // }),
+    forbid() {
+      Toast('未开放')
+    },
+    linkToComment() {
+      this.$router.push({
+        path: '/comment',
+        query: {
+          id: this.currentSong.id
+        }
+      })
+    },
     handleTouchstart() {
       this.showMarkLine = true
     },
@@ -133,13 +135,6 @@ export default {
         // console.log('beforeScrollStart')
         this.enableScroll = false
       })
-      // this.bs.on('scroll', (position) => {
-      //   const oneLryItemHeight = this.$refs.lry[0].$el.clientHeight
-      //   const ellesCount = (this.$refs.scroll.clientHeight / 2) / oneLryItemHeight - 1
-      //   const ynum = Math.abs(position.y)
-      //   const positionIndex = Math.round((ynum / oneLryItemHeight) + ellesCount)
-      //   this.lyricMoveIndex = positionIndex
-      // })
       this.bs.on('scrollEnd', (position) => {
         // console.log('scrollEnd', position)
         this.enableScroll = true
@@ -163,6 +158,32 @@ export default {
     },
     gift() {
       this.show = true
+    },
+    downloadMusic() {
+      const toast = Toast.loading({
+        duration: 0, // 持续展示 toast
+        forbidClick: true,
+        message: '下载中'
+      })
+
+      // https://kaier001.com/api/v2/down/downMusic?url=
+      axios.get(this.currentSong.url, { responseType: 'blob' }).then((res) => {
+        toast.message = '下载完成'
+        Toast.clear()
+        createDownload(this.currentSong.name, res.data)
+      }).catch(() => {
+        Toast.clear()
+      })
+
+      // axios.get(`https://kaier001.com/api/v2/down/downMusic?url=${this.currentSong.url}`, { responseType: 'blob' }).then((res) => {
+      //   console.log('sdfsf')
+      //   toast.message = '下载完成'
+      //   Toast.clear()
+      //   createDownload(this.currentSong.name, res.data)
+      // }).catch((err) => {
+      //   console.log('err', err)
+      //   Toast.clear()
+      // })
     }
   }
 
@@ -170,6 +191,10 @@ export default {
 </script>
 
 <style lang="scss">
+.anction-icon{
+  font-size: 24px;
+  color: #ffffff;
+}
 @keyframes changeright {
     0%{-webkit-transform:rotate(0deg);}
     50%{-webkit-transform:rotate(180deg);}
@@ -177,6 +202,22 @@ export default {
     100%{-webkit-transform:rotate(360deg);}
 }
 .player-wrap {
+  height: calc(100vh - 50px);
+  background-color:rgba(0,0,0,0.4);
+  .player-wrap-cover{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(50px);
+    z-index: -1;
+    background-size: cover;
+  }
+  /deep/ .van-nav-bar__title {
+    color: #ffffff !important;
+  }
   /deep/.van-notice-bar__wrap{
     display: flex;
     justify-content: center;
@@ -213,7 +254,8 @@ export default {
         }
       }
       p {
-        @include font_color('font_color1');
+        /* @include font_color('font_color1'); */
+        color: #ffffff;
         position: relative;
         width: auto;
         padding: 4px 0;

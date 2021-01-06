@@ -30,7 +30,8 @@ import {
   Lazyload,
   Divider,
   Overlay,
-  PullRefresh
+  PullRefresh,
+  Loading
 } from 'vant'
 Vue.use(Button)
 Vue.use(Cell)
@@ -62,3 +63,4 @@ Vue.use(Tabbar)
   .use(Divider)
   .use(PullRefresh)
   .use(Overlay)
+  .use(Loading)
