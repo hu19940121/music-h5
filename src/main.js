@@ -5,6 +5,12 @@ import 'regenerator-runtime/runtime'
 
 import Vue from 'vue'
 
+import VueSocketIO from 'vue-socket.io'
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: 'http://127.0.0.1:7002' // 服务端连接
+}))
+
 // sentry监控
 // import * as Sentry from '@sentry/vue'
 

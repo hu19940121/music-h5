@@ -103,6 +103,12 @@ export const constantRouterMap = [
     meta: {
       keepAlive: false
     }
+  }, {
+    path: '/socket',
+    component: () => import('@/views/socket/index'),
+    meta: {
+      keepAlive: false
+    }
   }
 
 ]

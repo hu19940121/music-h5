@@ -8,6 +8,9 @@
       <div  v-for="(gedan,index) in gedanList" :key="gedan.id" :class="(index + 1) % 3 === 0 ? 'list-item ' : 'list-item margin-right-xxs'">
         <playlistItem :info="gedan" />
       </div>
+      <div class="list-item">
+        <playlistItem @click.native="jumpLaoliang" :info="laoliang" />
+      </div>
     </div>
     <div class="title margin-tb-sm">
       {{$t('home.recommendView.newMusicText')}}
@@ -38,7 +41,20 @@ export default {
     return {
       songList: [],
       gedanList: [],
-      hotSingersList: []
+      hotSingersList: [],
+      laoliang: {
+        'id': 'xxx',
+        'type': 0,
+        'name': '老梁故事汇 2020',
+        'copywriter': '编辑推荐：为音乐人提供了不少灵感',
+        'picUrl': 'https://pic.qingting.fm/channel/2020/06/18/e8532125b09aed27dee74393e5b4c425.jpg!400',
+        'canDislike': false,
+        'trackNumberUpdateTime': 1609863133163,
+        'playCount': 280029,
+        'trackCount': 27,
+        'highQuality': false,
+        'alg': 'featured'
+      }
     }
   },
   components: {
@@ -52,6 +68,11 @@ export default {
     this.getHotArtists()
   },
   methods: {
+    jumpLaoliang() {
+      this.$router.push({
+        path: `/laoliang`
+      })
+    },
     jumpToPlaylist(item) {
       this.$router.push({
         path: `/playlist?id=${item.id}`
@@ -69,7 +90,7 @@ export default {
       })
     },
     getPersonalized() {
-      personalized({ limit: 6 }).then(res => {
+      personalized({ limit: 5 }).then(res => {
         this.gedanList = res.result
       })
     },
