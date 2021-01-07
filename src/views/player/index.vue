@@ -20,6 +20,9 @@
       text="更多更能正在开发中！"
     /> -->
     <div class="player flex flex-direction align-center">
+      <div class="user-list margin-top-sm" v-if="userList.length  > 0">
+        <img  @click="giveGift(user)"  v-for="user in userList" :key="user.userId" class="user-list-avatar margin-right-xs" :src="user.avatarUrl" alt="">
+      </div>
       <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
       <div class="lrylist"  ref="scroll">
         <div class="scroll-content">
@@ -34,12 +37,28 @@
       <svg-icon class="anction-icon"  icon-class="aixin"   @click="forbid" />
       <svg-icon class="anction-icon" icon-class="xiazai"   @click="downloadMusic" />
       <svg-icon @click="linkToComment" class="anction-icon" icon-class="pinglun"   />
+      <van-icon @click="invite" class="anction-icon" name="service-o" />
     </div>
     <van-dialog v-model="show" title="赏杯奶茶？" show-cancel-button>
       <div style="text-align:center;">
         <img style="width:80%;" src="./zhifu.jpg" />
       </div>
     </van-dialog>
+
+    <div class="donghuagouzi">
+      <transition
+        name="fade"
+        @before-enter="handleVeforeEnter"
+        @enter="handleEnter"
+        @after-enter="handleAfterEnter"
+      >
+        <img v-if="rocketShow" ref="rocket" class="rocket" :src="rocket" alt="">
+
+        <!-- <div v-show="show">hello World</div> -->
+      </transition>
+      <!-- <van-button @click="handleClick">fasne</van-button> -->
+    </div>
+
   </div>
 
 </template>
@@ -51,6 +70,9 @@ import { getSizeImage, createDownload } from '@/utils'
 import BScroll from '@better-scroll/core'
 import { Toast } from 'vant'
 import axios from 'axios'
+
+import { Notify } from 'vant'
+import Velocity from 'velocity-animate'
 export default {
   data() {
     return {
@@ -61,7 +83,12 @@ export default {
       getSizeImage,
       show: false,
       enableScroll: true,
-      noticeBarScrollable: false
+      noticeBarScrollable: false,
+
+      // 一起听
+      rocketShow: false,
+      rocket: require('./rocket.png'),
+      userList: []
     }
   },
   watch: {
@@ -82,10 +109,13 @@ export default {
     this.$nextTick(() => {
       this.initScroll()
     })
+
+    this.$route.query.roomId && this.joinOhterRoom()
   },
   computed: {
 
     ...mapState({
+      user: (state) => state.user.userInfo,
       isInApp: (state) => state.app.isInApp,
       currentSong: (state) => state.song.currentSong,
       isPlaying: (state) => state.song.isPlaying,
@@ -184,13 +214,113 @@ export default {
       //   console.log('err', err)
       //   Toast.clear()
       // })
+    },
+
+    invite() {
+      if (!this.user.userId) {
+        Toast('请先去登陆哦～～')
+        return
+      }
+      this.createRoom()
+    },
+
+    // 创建一起听的房间 建立websocket连接
+    createRoom() {
+      console.log('location', location.href)
+      this.$socket.io.opts.query = { roomId: this.user.userId, user: JSON.stringify(this.user) }
+      this.$socket.connect()
+      this.$copyText(`${location.href}&roomId=${this.user.userId}`).then(function(e) {
+        Toast('已复制到剪贴板，快发送给你的好友吧！')
+        console.log(e)
+      }, function(e) {
+        alert('Can not copy')
+        console.log(e)
+      })
+    },
+
+    // 加入房间
+    joinOhterRoom() {
+      // 先判断有没有登陆
+      if (!this.user.userId) {
+        this.$router.push({
+          path: '/login',
+          query: {
+            redirect: this.$route.fullPath
+          }
+        })
+        return
+      }
+
+      this.$socket.io.opts.query = { roomId: this.$route.query.roomId, user: JSON.stringify(this.user) }
+      this.$socket.connect()
+    },
+    giveGift(user) {
+      this.$socket.emit('giveGift', {
+        toUser: user,
+        fromUser: this.user,
+        message: `${this.user.nickname}送给了${user.nickname}一枚火箭！！`
+      })
+    },
+    handleVeforeEnter(el) {
+    },
+    handleEnter(el, done) {
+      Velocity(el, {
+        top: -this.$refs.rocket.clientHeight
+      }, {
+        duration: 1000,
+        complete: done
+      })
+    },
+    handleAfterEnter() {
+      this.rocketShow = false
+      console.log('动画结束')
     }
+  },
+  sockets: {
+    join(data) {
+      const list = []
+      data.userList.forEach(element => {
+        list.push(element)
+      })
+      this.userList = list
+    },
+    noticeAll(data) {
+      this.rocketShow = true
+      Notify({ type: 'primary', message: data })
+    },
+    connect() {
+      console.log('连接成功！')
+    },
+    disconnect() {
+      console.log('断开连接')
+    },
+    reconnect() {
+      console.log('重新连接')
+    },
+    leave(data) {
+      const list = []
+      data.userList.forEach(element => {
+        list.push(element)
+      })
+      this.userList = list
+    }
+  },
+
+  destroyed() {
+    console.log('destroyed')
+    this.$socket.disconnect()
   }
 
 }
 </script>
 
 <style lang="scss">
+.rocket {
+  width: 50px;
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+}
 .anction-icon{
   font-size: 24px;
   color: #ffffff;
@@ -223,11 +353,18 @@ export default {
     justify-content: center;
   }
   .player {
+    .user-list {
+      .user-list-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+    }
     .cover {
       display: inline-block;
-      margin: 50px 0;
-      width: 200px;
-      height: 200px;
+      margin: 25px 0;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       &.donghua {
         animation: changeright 6s linear infinite

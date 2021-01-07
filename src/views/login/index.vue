@@ -54,9 +54,7 @@ export default {
     }),
     onSubmit(values) {
       this.login(values).then((res) => {
-        this.$router.push({
-          path: '/'
-        })
+        this.$router.push({ path: this.$route.query.redirect || '/' })
       }).catch(err => {
         Toast(err)
       })

@@ -2,6 +2,7 @@
 // https://github.com/zloirock/core-js/blob/master/docs/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md#babelpolyfill
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
+import VueClipboard from 'vue-clipboard2'
 
 import Vue from 'vue'
 
@@ -9,9 +10,12 @@ import VueSocketIO from 'vue-socket.io'
 Vue.use(new VueSocketIO({
 
   debug: true,
-  connection: 'http://127.0.0.1:7002', // 服务端连接
+  // connection: 'http://127.0.0.1:7002', // 服务端连接
+  connection: 'https://kaier001.com', // 服务端连接
+
   options: { autoConnect: false }
 }))
+Vue.use(VueClipboard)
 
 // sentry监控
 // import * as Sentry from '@sentry/vue'
