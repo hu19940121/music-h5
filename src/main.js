@@ -7,16 +7,17 @@ import VueClipboard from 'vue-clipboard2'
 import Vue from 'vue'
 
 import VueSocketIO from 'vue-socket.io'
-Vue.use(new VueSocketIO({
 
+import Notification from '@/components/notification'
+
+Vue.use(new VueSocketIO({
   debug: true,
   // connection: 'http://127.0.0.1:7002', // 服务端连接
-  connection: 'https://kaier001.com', // 服务端连接
-
-  options: { autoConnect: false }
+  connection: '/', // 服务端连接
+  options: { autoConnect: false } // 到固定页面再发起连接
 }))
 Vue.use(VueClipboard)
-
+Vue.use(Notification)
 // sentry监控
 // import * as Sentry from '@sentry/vue'
 

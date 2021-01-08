@@ -38,6 +38,8 @@
         </p>
       </div>
     </footer>
+        <!-- <van-button @click="test">ceshi</van-button> -->
+
     <van-overlay z-index="10001" :show="showDownLoadTip" @click="showDownLoadTip = false">
       <div class="content" @click.stop>
         <div class="padding-right padding-top-sm" style="text-align:right;">
@@ -98,6 +100,14 @@ export default {
     })
   },
   methods: {
+    test() {
+      // this.$knotify({
+      //   title: '提示',
+      //   message: '这是一条不会自动关闭的消息',
+      //   duration: 0,
+      //   position: 'top-left'
+      // })
+    },
     onClickRight() {
       // eslint-disable-next-line no-undef
       uni.postMessage({

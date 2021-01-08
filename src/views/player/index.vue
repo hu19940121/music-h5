@@ -20,10 +20,12 @@
       text="更多更能正在开发中！"
     /> -->
     <div class="player flex flex-direction align-center">
-      <div class="user-list margin-top-sm" v-if="userList.length  > 0">
-        <img  @click="giveGift(user)"  v-for="user in userList" :key="user.userId" class="user-list-avatar margin-right-xs" :src="user.avatarUrl" alt="">
+      <div  class="user-list margin-top-sm" v-if="userList.length  > 0">
+        <img  @click="openGiftPopup(user)"  v-for="user in userList" :key="user.userId" class="user-list-avatar margin-right-xs" :src="user.avatarUrl" alt="">
       </div>
-      <van-image round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
+      <div  ref="vanimage">
+       <van-image  round :class="['cover', { 'donghua': isPlaying } ]" :src=" getSizeImage(currentSong.al && currentSong.al.picUrl,300) " />
+      </div>
       <div class="lrylist"  ref="scroll">
         <div class="scroll-content">
           <p ref="lry"  :class="{ 'redColor':currentLyricIndex === index, 'moveColor': lyricMoveIndex === index }" :key="item.time" v-for="(item,index) in lyricList">{{ item.content }}</p>
@@ -44,20 +46,18 @@
         <img style="width:80%;" src="./zhifu.jpg" />
       </div>
     </van-dialog>
+    <rocket v-model="gifts.rocket.show" />
+    <pig v-model="gifts.pig.show" />
 
-    <div class="donghuagouzi">
-      <transition
-        name="fade"
-        @before-enter="handleVeforeEnter"
-        @enter="handleEnter"
-        @after-enter="handleAfterEnter"
-      >
-        <img v-if="rocketShow" ref="rocket" class="rocket" :src="rocket" alt="">
+    <!-- 选择礼物-->
+    <van-popup v-model="showPopup" position="bottom" :style="{ height: '30%' }">
+      <div class="padding-xs">
+        <p class="padding-tb-xs">送{{ toUser.nickname }}礼物:</p>
+        <svg-icon class="anction-icon margin-right-sm" icon-class="huojian"   @click="giveGift('rocket')" />
+        <svg-icon class="anction-icon" icon-class="meigui"   @click="giveGift('pig')" />
+      </div>
 
-        <!-- <div v-show="show">hello World</div> -->
-      </transition>
-      <!-- <van-button @click="handleClick">fasne</van-button> -->
-    </div>
+    </van-popup>
 
   </div>
 
@@ -68,14 +68,19 @@ import { mapState, mapActions } from 'vuex'
 import { getSongDetail } from '@/api/song'
 import { getSizeImage, createDownload } from '@/utils'
 import BScroll from '@better-scroll/core'
-import { Toast } from 'vant'
 import axios from 'axios'
 
-import { Notify } from 'vant'
+import { Dialog, Toast } from 'vant'
+
 import Velocity from 'velocity-animate'
+
+import rocket from '@/components/gifts/rocket'
+import pig from '@/components/gifts/pig'
+
 export default {
   data() {
     return {
+
       // formatMinuteSecond,
       timer: null,
       showMarkLine: false,
@@ -86,9 +91,22 @@ export default {
       noticeBarScrollable: false,
 
       // 一起听
+      toUser: {},
       rocketShow: false,
-      rocket: require('./rocket.png'),
-      userList: []
+      gifts: {
+        rocket: {
+          show: false,
+          name: '火箭',
+          unit: '枚'
+        },
+        pig: {
+          show: false,
+          name: '猪',
+          unit: '头'
+        }
+      },
+      userList: [],
+      showPopup: false
     }
   },
   watch: {
@@ -104,16 +122,14 @@ export default {
       })
     }
   },
+  components: {
+    rocket,
+    pig
+  },
   mounted() {
-    (this.$route.query.id && !this.isPlaying) && this.playMusicByRouterId()
-    this.$nextTick(() => {
-      this.initScroll()
-    })
-
-    this.$route.query.roomId && this.joinOhterRoom()
+    this.init()
   },
   computed: {
-
     ...mapState({
       user: (state) => state.user.userInfo,
       isInApp: (state) => state.app.isInApp,
@@ -127,6 +143,23 @@ export default {
     ...mapActions({
       setCurrentSong: 'song/setCurrentSong'
     }),
+
+    // 初始化方法
+    init() {
+      if (this.$route.query.roomId) {
+        this.joinOhterRoom().then(() => {
+          (this.$route.query.id && !this.isPlaying) && this.playMusicByRouterId()
+          this.$nextTick(() => {
+            this.initScroll()
+          })
+        })
+      } else {
+        (this.$route.query.id && !this.isPlaying) && this.playMusicByRouterId()
+        this.$nextTick(() => {
+          this.initScroll()
+        })
+      }
+    },
     forbid() {
       Toast('未开放')
     },
@@ -218,7 +251,22 @@ export default {
 
     invite() {
       if (!this.user.userId) {
-        Toast('请先去登陆哦～～')
+        Dialog.confirm({
+          title: '去登陆',
+          message: '此功能需登陆后才能使用，是否去登陆？'
+        })
+          .then(() => {
+            this.$router.push({
+              path: '/login',
+              query: {
+                redirect: this.$route.fullPath
+              }
+            })
+          })
+          .catch(() => {
+            // on cancel
+          })
+        // Toast('请先去登陆哦～～')
         return
       }
       this.createRoom()
@@ -248,17 +296,24 @@ export default {
             redirect: this.$route.fullPath
           }
         })
-        return
+        return Promise.reject('未登录')
       }
-
       this.$socket.io.opts.query = { roomId: this.$route.query.roomId, user: JSON.stringify(this.user) }
       this.$socket.connect()
+      return Promise.resolve(true)
     },
-    giveGift(user) {
+    openGiftPopup(user) {
+      this.toUser = user
+      this.showPopup = true
+    },
+    giveGift(giftType) {
+      const { gifts } = this
+      this.showPopup = false
       this.$socket.emit('giveGift', {
-        toUser: user,
+        toUser: this.toUser,
         fromUser: this.user,
-        message: `${this.user.nickname}送给了${user.nickname}一枚火箭！！`
+        message: `${this.user.nickname}送给了${this.toUser.nickname}一${gifts[giftType].unit}${gifts[giftType].name}！！`,
+        type: giftType
       })
     },
     handleVeforeEnter(el) {
@@ -285,8 +340,14 @@ export default {
       this.userList = list
     },
     noticeAll(data) {
-      this.rocketShow = true
-      Notify({ type: 'primary', message: data })
+      this.gifts[data.type].show = true
+      this.$knotify({
+        message: data.message,
+        duration: 2500,
+        offset: this.$refs.vanimage.getBoundingClientRect().top,
+        position: 'top-left'
+      })
+      // Notify({ type: 'primary', message: data })
     },
     connect() {
       console.log('连接成功！')
@@ -315,12 +376,7 @@ export default {
 </script>
 
 <style lang="scss">
-.rocket {
-  width: 50px;
-  position: fixed;
-  bottom: 0;
-  right: 10px;
-}
+
 .anction-icon{
   font-size: 24px;
   color: #ffffff;

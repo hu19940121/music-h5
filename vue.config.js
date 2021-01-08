@@ -73,6 +73,13 @@ module.exports = {
         pathRewrite: {
           '^/planet/api': '/planet/api'
         }
+      },
+      '/socket.io': {
+        // target: 'http://music.kaier001.com/',
+        target: 'http://127.0.0.1:7002/',
+
+        ws: true,
+        changeOrigin: true
       }
     }
     // proxy: {
